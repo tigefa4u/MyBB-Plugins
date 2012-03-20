@@ -1,0 +1,10 @@
+<?php
+// The absolute path the the repo on your system
+define('GIT_REPO_ROOT', 'C:\wamp\www\git\\');
+// The path to the files inside the repo, e.g. /files/ or /Upload/ - default is /
+define('REPO_FILE_ROOT', '/');
+// The path to the readme file inside the repo - default is /readme.txt
+define('REPO_README_PATH', '/readme.txt');
+// The name of the repo to contain files for all your plugins. Leave blank to disable this functionality.
+define('GLOBAL_REPO_NAME', '');
+?>
