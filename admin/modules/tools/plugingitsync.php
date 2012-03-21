@@ -316,14 +316,18 @@ elseif($mybb->input['action'] == 'edit_readme')
 		if(empty($mybb->input['plugin_readme']))
 		{
 			flash_message($lang->plugingitsync_manage_plugins_edit_readme_error_empty, 'error');
+			admin_redirect('index.php?module=tools-plugingitsync&action=edit_readme&plugin='.$mybb->input['plugin']);
 		}
-		if(!@file_put_contents(GIT_REPO_ROOT.$plugin_repo_name.REPO_README_PATH, $mybb->input['plugin_readme']))
+		elseif(!@file_put_contents(GIT_REPO_ROOT.$plugin_repo_name.REPO_README_PATH, $mybb->input['plugin_readme']))
 		{
 			flash_message($lang->plugingitsync_manage_plugins_edit_readme_error_writing, 'error');
+			admin_redirect('index.php?module=tools-plugingitsync&action=edit_readme&plugin='.$mybb->input['plugin']);
 		}
-		
-		flash_message($lang->plugingitsync_manage_plugins_edit_readme_success, 'success');
-		admin_redirect('index.php?module=tools-plugingitsync');
+		else
+		{
+			flash_message($lang->plugingitsync_manage_plugins_edit_readme_success, 'success');
+			admin_redirect('index.php?module=tools-plugingitsync');
+		}
 	}
 	
 	$readme = @file_get_contents(GIT_REPO_ROOT.$plugin_repo_name.REPO_README_PATH);
