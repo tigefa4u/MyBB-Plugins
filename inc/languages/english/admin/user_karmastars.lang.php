@@ -18,4 +18,8 @@
 **/
 
 $l['karmastars'] = 'Karma Stars';
+$l['karmastars_posts'] = 'Post Count';
+$l['karmastars_name'] = 'Karma Level Name';
+$l['karmastars_image'] = 'Image';
+$l['karmastars_image_path'] = 'Image Path';
 ?>
