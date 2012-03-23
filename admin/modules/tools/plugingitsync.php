@@ -586,6 +586,33 @@ elseif($mybb->input['action'] == 'do_sync')
 		
 		foreach($files as $file)
 		{
+			$file_path = explode('/', $file);
+			$file_name = array_pop($file_path);
+			for($i = 0; $i < count($file_path); $i++)
+			{
+				$dir_path = '';
+				foreach($file_path as $key => $piece)
+				{
+					if($key <= $i)
+					{
+						$dir_path .= $piece.'/';
+					}
+				}
+				if($mybb->input['sync_direction'] == 'to_forum')
+				{
+					if(!is_dir(MYBB_ROOT.$dir_path))
+					{
+						@mkdir(MYBB_ROOT.$dir_path, 0777);
+					}
+				}
+				else
+				{
+					if(!is_dir($git_root.$dir_path))
+					{
+						@mkdir($git_root.$dir_path, 0777);
+					}
+				}
+			}
 			if(!@copy($from_root.$file, $to_root.$file))
 			{
 				$errors[] = $file;
