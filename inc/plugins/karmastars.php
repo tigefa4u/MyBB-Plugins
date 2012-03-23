@@ -22,7 +22,9 @@ if(!defined("IN_MYBB"))
 	die("Direct initialization of this file is not allowed.<br /><br />Please make sure IN_MYBB is defined.");
 }
 
-
+$plugins->add_hook("admin_user_menu", "karmastars_admin_user_menu");
+$plugins->add_hook("admin_user_action_handler", "karmastars_admin_user_action_handler");
+$plugins->add_hook("admin_user_permissions", "karmastars_admin_user_permissions");
 
 function karmastars_info()
 {
@@ -40,17 +42,38 @@ function karmastars_info()
 
 function karmastars_install()
 {
+	global $db;
 	
+	plugingitsync_uninstall();
+	
+	if(!$db->table_exists('karmastars'))
+	{
+		$db->write_query("
+			CREATE TABLE IF NOT EXISTS `" . TABLE_PREFIX . "karmastars` (
+				`karmastar_id` INT( 11 ) NOT NULL AUTO_INCREMENT PRIMARY KEY ,
+				`karmastar_posts` INT( 5 ) NOT NULL ,
+				`karmastar_name` VARCHAR( 255 ) NOT NULL ,
+				`karmastar_image` VARCHAR( 255 ) NOT NULL
+			) ENGINE = MYISAM ;
+		");
+	}
 }
 
 function karmastars_is_installed()
 {
+	global $db;
 	
+	return $db->table_exists('karmastars');
 }
 
 function karmastars_uninstall()
 {
+	global $db;
 	
+	if($db->table_exists('karmastars'))
+	{
+		$db->drop_table('karmastars');
+	}
 }
 
 function karmastars_activate()
@@ -61,5 +84,37 @@ function karmastars_activate()
 function karmastars_deactivate()
 {
 	
+}
+
+function karmastars_admin_user_menu($sub_menu)
+{
+	global $lang;
+	
+	$lang->load("user_karmastars");
+	
+	$sub_menu[] = array("id" => "karmastars", "title" => $lang->karmastars, "link" => "index.php?module=user-karmastars");
+	
+	return $sub_menu;
+}
+
+function karmastars_admin_user_action_handler($actions)
+{
+	$actions['karmastars'] = array(
+		"active" => "karmastars",
+		"file" => "karmastars.php"
+	);
+	
+	return $actions;
+}
+
+function karmastars_admin_user_permissions($admin_permissions)
+{
+	global $lang;
+	
+	$lang->load("user_karmastars");
+	
+	$admin_permissions['karmastars'] = $lang->can_manage_karmastars;
+	
+	return $admin_permissions;
 }
 ?>
