@@ -17,6 +17,66 @@
  * limitations under the License.
 **/
 
+if($mybb->request_method == 'post')
+{
+	//echo '<pre>';print_r($mybb->input['karmastars']);echo '</pre>';exit;
+	$errors = array();
+	$errors_count = 0;
+	$inserts = array();
+	for($i = 0; $i < count($mybb->input['karmastars']); $i++)
+	{
+		if(empty($mybb->input['karmastars'][$i]['image']) && empty($mybb->input['karmastars'][$i]['posts']) && empty($mybb->input['karmastars'][$i]['name']))
+		{
+			continue;
+		}
+		$errors[$i] = array();
+		if(empty($mybb->input['karmastars'][$i]['image']))
+		{
+			$errors[$i][] = 'image';
+			$errors_count++;
+		}
+		elseif(!@file_exists(MYBB_ROOT.$mybb->input['karmastars'][$i]['image']))
+		{
+			$errors[$i][] = 'image_missing';
+			$errors_count++;
+		}
+		if(empty($mybb->input['karmastars'][$i]['posts']))
+		{
+			$errors[$i][] = 'posts';
+			$errors_count++;
+		}
+		if(empty($mybb->input['karmastars'][$i]['name']))
+		{
+			$errors[$i][] = 'name';
+			$errors_count++;
+		}
+		if(empty($errors[$i]))
+		{
+			$inserts[] = array(
+				'karmastar_image' => $db->escape_string($mybb->input['karmastars'][$i]['image']),
+				'karmastar_posts' => $db->escape_string($mybb->input['karmastars'][$i]['posts']),
+				'karmastar_name' => $db->escape_string($mybb->input['karmastars'][$i]['name'])
+			);
+		}
+	}
+	
+	if($errors_count > 0)
+	{
+		//echo '<pre>';print_r($errors);echo '</pre>';
+		flash_message($lang->karmastars_update_errors, 'error');
+	}
+	else
+	{
+		$db->delete_query('karmastars');
+		foreach($inserts as $insert)
+		{
+			$db->insert_query('karmastars', $insert);
+		}
+		flash_message($lang->karmastars_update_success, 'success');
+		admin_redirect('index.php?module=user-karmastars');
+	}
+}
+
 $page->add_breadcrumb_item($lang->karmastars);
 $page->output_header($lang->karmastars);
 
@@ -24,20 +84,21 @@ $form = new Form("index.php?module=user-karmastars", "post");
 $form_container = new FormContainer($lang->karmastars);
 $form_container->output_row_header($lang->karmastars_image, array("class" => "align_center"));
 $form_container->output_row_header($lang->karmastars_posts, array("class" => "align_center"));
-$form_container->output_row_header($lang->karmastars_name);
-$form_container->output_row_header($lang->karmastars_image_path);
+$form_container->output_row_header($lang->karmastars_name, array("class" => "align_center"));
+$form_container->output_row_header($lang->karmastars_image_path, array("class" => "align_center"));
 
-$query = $db->simple_select('karmastars', '*', '', array('order_by' => 'karmastar_posts', 'order_dir' => 'ASC'));
+$query = $db->simple_select('karmastars', '*', 'karmastar_posts != \'0\'', array('order_by' => 'karmastar_posts', 'order_dir' => 'ASC'));
 $karmastars = array();
 while($karmastar = $db->fetch_array($query))
 {
 	$karmastars[] = $karmastar;
 }
+//echo '<pre>';print_r($karmastars);echo '</pre>';
 for($i = 0; $i < 20; $i++)
 {
-	if(isset($_POST['karmastar_images'][$i]))
+	if(isset($_POST['karmastars'][$i]['image']))
 	{
-		$karmastar_image = $_POST['karmastar_images'][$i];
+		$karmastar_image = $_POST['karmastars'][$i]['image'];
 	}
 	elseif(isset($karmastars[$i]['karmastar_image']))
 	{
@@ -47,9 +108,9 @@ for($i = 0; $i < 20; $i++)
 	{
 		$karmastar_image = '';
 	}
-	if(isset($_POST['karmastar_posts'][$i]))
+	if(isset($_POST['karmastars'][$i]['posts']))
 	{
-		$karmastar_posts = $_POST['karmastar_posts'][$i];
+		$karmastar_posts = $_POST['karmastars'][$i]['posts'];
 	}
 	elseif(isset($karmastars[$i]['karmastar_posts']))
 	{
@@ -59,9 +120,9 @@ for($i = 0; $i < 20; $i++)
 	{
 		$karmastar_posts = '';
 	}
-	if(isset($_POST['karmastar_names'][$i]))
+	if(isset($_POST['karmastars'][$i]['name']))
 	{
-		$karmastar_name = $_POST['karmastar_names'][$i];
+		$karmastar_name = $_POST['karmastars'][$i]['name'];
 	}
 	elseif(isset($karmastars[$i]['karmastar_name']))
 	{
@@ -77,12 +138,31 @@ for($i = 0; $i < 20; $i++)
 	}
 	else
 	{
-		$karmastar_image_image = '<img src="'.$karmastar_image.'" alt="'.$karmastar_name.'" title="'.$karmastar_name.'" />';
+		$karmastar_image_image = '<img src="'.$mybb->settings['bburl'].'/'.$karmastar_image.'" alt="'.$karmastar_name.'" title="'.$karmastar_name.'" />';
+	}
+	$posts_error = '';
+	if(isset($errors[$i]) && !empty($errors[$i]) && in_array('posts', $errors[$i]))
+	{
+		$posts_error = '<br /><span style="color: red;">'.$lang->karmastars_update_error_posts.'</span>';
+	}
+	$name_error = '';
+	if(isset($errors[$i]) && !empty($errors[$i]) && in_array('name', $errors[$i]))
+	{
+		$name_error = '<br /><span style="color: red;">'.$lang->karmastars_update_error_name.'</span>';
+	}
+	$image_error = '';
+	if(isset($errors[$i]) && !empty($errors[$i]) && in_array('image', $errors[$i]))
+	{
+		$image_error = '<br /><span style="color: red;">'.$lang->karmastars_update_error_image.'</span>';
+	}
+	elseif(isset($errors[$i]) && !empty($errors[$i]) && in_array('image_missing', $errors[$i]))
+	{
+		$image_error = '<br /><span style="color: red;">'.$lang->karmastars_update_error_image_missing.'</span>';
 	}
 	$form_container->output_cell($karmastar_image_image, array("class" => "align_center"));
-	$form_container->output_cell($form->generate_text_box('karmastar_posts[]', $karmastar_posts, array('style' => 'width: 100px;')), array("class" => "align_center"));
-	$form_container->output_cell($form->generate_text_box('karmastar_names[]', $karmastar_name));
-	$form_container->output_cell($form->generate_text_box('karmastar_images[]', $karmastar_image));
+	$form_container->output_cell($form->generate_text_box('karmastars['.$i.'][posts]', $karmastar_posts, array('style' => 'width: 100px;')).$posts_error, array("class" => "align_center"));
+	$form_container->output_cell($form->generate_text_box('karmastars['.$i.'][name]', $karmastar_name).$name_error, array("class" => "align_center"));
+	$form_container->output_cell($form->generate_text_box('karmastars['.$i.'][image]', $karmastar_image).$image_error, array("class" => "align_center"));
 	$form_container->construct_row();
 }
 

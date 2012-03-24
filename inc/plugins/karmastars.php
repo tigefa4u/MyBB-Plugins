@@ -56,6 +56,107 @@ function karmastars_install()
 				`karmastar_image` VARCHAR( 255 ) NOT NULL
 			) ENGINE = MYISAM ;
 		");
+		$karmastars = array(
+			array(
+				'image' => 'images/karmastars/1_small_silver.gif',
+				'posts' => '20',
+				'name' => 'One Small Silver Star'
+			),
+			array(
+				'image' => 'images/karmastars/2_small_silver.gif',
+				'posts' => '50',
+				'name' => 'Two Small Silver Stars'
+			),
+			array(
+				'image' => 'images/karmastars/3_small_silver.gif',
+				'posts' => '125',
+				'name' => 'Three Small Silver Stars'
+			),
+			array(
+				'image' => 'images/karmastars/4_small_silver.gif',
+				'posts' => '250',
+				'name' => 'Four Small Silver Stars'
+			),
+			array(
+				'image' => 'images/karmastars/1_small_gold.gif',
+				'posts' => '550',
+				'name' => 'One Small Gold Star'
+			),
+			array(
+				'image' => 'images/karmastars/2_small_gold.gif',
+				'posts' => '1000',
+				'name' => 'Two Small Gold Stars'
+			),
+			array(
+				'image' => 'images/karmastars/3_small_gold.gif',
+				'posts' => '1500',
+				'name' => 'Three Small Gold Stars'
+			),
+			array(
+				'image' => 'images/karmastars/4_small_gold.gif',
+				'posts' => '2200',
+				'name' => 'Four Small Gold Stars'
+			),
+			array(
+				'image' => 'images/karmastars/1_med_silver.gif',
+				'posts' => '3000',
+				'name' => 'One Medium Silver Star'
+			),
+			array(
+				'image' => 'images/karmastars/2_med_silver.gif',
+				'posts' => '4000',
+				'name' => 'Two Medium Silver Stars'
+			),
+			array(
+				'image' => 'images/karmastars/1_med_gold.gif',
+				'posts' => '5500',
+				'name' => 'One Medium Gold Star'
+			),
+			array(
+				'image' => 'images/karmastars/2_med_gold.gif',
+				'posts' => '7500',
+				'name' => 'Two Medium Gold Stars'
+			),
+			array(
+				'image' => 'images/karmastars/1_large_silver.gif',
+				'posts' => '10000',
+				'name' => 'One Large Silver Star'
+			),
+			array(
+				'image' => 'images/karmastars/1_large_gold.gif',
+				'posts' => '12500',
+				'name' => 'One Large Gold Star'
+			),
+			array(
+				'image' => 'images/karmastars/1_large_silver_sparkling.gif',
+				'posts' => '15000',
+				'name' => 'One Large Silver Sparkling Star'
+			),
+			array(
+				'image' => 'images/karmastars/1_large_gold_sparkling.gif',
+				'posts' => '17500',
+				'name' => 'One Large Gold Sparkling Star'
+			),
+			array(
+				'image' => 'images/karmastars/1_large_platinum_spinning.gif',
+				'posts' => '20000',
+				'name' => 'One Large Platinum Spinning Star'
+			),
+			array(
+				'image' => 'images/karmastars/1_large_flashing.gif',
+				'posts' => '40000',
+				'name' => 'One Large Flashing Star'
+			)
+		);
+		foreach($karmastars as $karmastar)
+		{
+			$insert = array(
+				'karmastar_image' => $db->escape_string($karmastar['image']),
+				'karmastar_posts' => $db->escape_string($karmastar['posts']),
+				'karmastar_name' => $db->escape_string($karmastar['name'])
+			);
+			$db->insert_query('karmastars', $insert);
+		}
 	}
 }
 

@@ -22,4 +22,10 @@ $l['karmastars_posts'] = 'Post Count';
 $l['karmastars_name'] = 'Karma Level Name';
 $l['karmastars_image'] = 'Image';
 $l['karmastars_image_path'] = 'Image Path';
+$l['karmastars_update_success'] = 'The Karma Stars have been updated successfully.';
+$l['karmastars_update_errors'] = 'Please correct the errors. All fields are required.';
+$l['karmastars_update_error_posts'] = 'Post count is missing';
+$l['karmastars_update_error_name'] = 'Name is missing';
+$l['karmastars_update_error_image'] = 'Image is missing';
+$l['karmastars_update_error_image_missing'] = 'Image doesn\'t exist';
 ?>
