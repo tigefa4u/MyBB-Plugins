@@ -28,30 +28,65 @@ $form_container->output_row_header($lang->karmastars_name);
 $form_container->output_row_header($lang->karmastars_image_path);
 
 $query = $db->simple_select('karmastars', '*', '', array('order_by' => 'karmastar_posts', 'order_dir' => 'ASC'));
-$karmastar_count = 0;
+$karmastars = array();
 while($karmastar = $db->fetch_array($query))
 {
-	$form_container->output_cell('<img src="'.$karmastar['karmastar_image'].'" alt="'.$karmastar['karmastar_name'].'" title="'.$karmastar['karmastar_name'].'" />');
-	$form_container->output_cell($karmastar['karmastar_posts']);
-	$form_container->output_cell($karmastar['karmastar_name']);
-	$form_container->output_cell($karmastar['karmastar_image']);
-	$form_container->construct_row();
-	$karmastar_count++;
+	$karmastars[] = $karmastar;
 }
-for($i = $karmastar_count; $i < 20; $i++)
+for($i = 0; $i < 20; $i++)
 {
-	$form_container->output_cell('-', array("class" => "align_center"));
-	$form_container->output_cell($form->generate_text_box('karmastar_posts[]', '', array('style' => 'width: 100px;')), array("class" => "align_center"));
-	$form_container->output_cell($form->generate_text_box('karmastar_names[]', ''));
-	$form_container->output_cell($form->generate_text_box('karmastar_images[]', ''));
+	if(isset($_POST['karmastar_images'][$i]))
+	{
+		$karmastar_image = $_POST['karmastar_images'][$i];
+	}
+	elseif(isset($karmastars[$i]['karmastar_image']))
+	{
+		$karmastar_image = $karmastars[$i]['karmastar_image'];
+	}
+	else
+	{
+		$karmastar_image = '';
+	}
+	if(isset($_POST['karmastar_posts'][$i]))
+	{
+		$karmastar_posts = $_POST['karmastar_posts'][$i];
+	}
+	elseif(isset($karmastars[$i]['karmastar_posts']))
+	{
+		$karmastar_posts = $karmastars[$i]['karmastar_posts'];
+	}
+	else
+	{
+		$karmastar_posts = '';
+	}
+	if(isset($_POST['karmastar_names'][$i]))
+	{
+		$karmastar_name = $_POST['karmastar_names'][$i];
+	}
+	elseif(isset($karmastars[$i]['karmastar_name']))
+	{
+		$karmastar_name = $karmastars[$i]['karmastar_name'];
+	}
+	else
+	{
+		$karmastar_name = '';
+	}
+	if(empty($karmastar_image))
+	{
+		$karmastar_image_image = '-';
+	}
+	else
+	{
+		$karmastar_image_image = '<img src="'.$karmastar_image.'" alt="'.$karmastar_name.'" title="'.$karmastar_name.'" />';
+	}
+	$form_container->output_cell($karmastar_image_image, array("class" => "align_center"));
+	$form_container->output_cell($form->generate_text_box('karmastar_posts[]', $karmastar_posts, array('style' => 'width: 100px;')), array("class" => "align_center"));
+	$form_container->output_cell($form->generate_text_box('karmastar_names[]', $karmastar_name));
+	$form_container->output_cell($form->generate_text_box('karmastar_images[]', $karmastar_image));
 	$form_container->construct_row();
 }
 
 $form_container->end();
-
-echo $form->generate_hidden_field("cupid", $cupid);
-echo $form->generate_hidden_field("fid", $fid);
-echo $form->generate_hidden_field("do", "do_forums");
 
 $buttons[] = $form->generate_submit_button($lang->submit);
 $form->output_submit_wrapper($buttons);
