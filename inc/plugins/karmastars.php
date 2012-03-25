@@ -23,6 +23,7 @@ if(!defined("IN_MYBB"))
 }
 
 $plugins->add_hook("postbit", "karmastars_postbit");
+$plugins->add_hook("misc_start", "karmastars_list");
 $plugins->add_hook("admin_user_menu", "karmastars_admin_user_menu");
 $plugins->add_hook("admin_user_action_handler", "karmastars_admin_user_action_handler");
 $plugins->add_hook("admin_user_permissions", "karmastars_admin_user_permissions");
@@ -183,18 +184,99 @@ function karmastars_uninstall()
 
 function karmastars_activate()
 {
+	global $db;
+	
+	karmastars_deactivate();
+	
 	require_once MYBB_ROOT . 'inc/adminfunctions_templates.php';
 	
 	find_replace_templatesets("postbit", "#".preg_quote('{$post[\'onlinestatus\']}')."#i", '{$post[\'karmastar\']}{$post[\'onlinestatus\']}');
 	find_replace_templatesets("postbit_classic", "#".preg_quote('{$post[\'onlinestatus\']}')."#i", '{$post[\'karmastar\']}{$post[\'onlinestatus\']}');
+	
+	$template_group = array(
+		"prefix" => "karmastars",
+		"title" => "<lang:karmastars>"
+	);
+	$db->insert_query("templategroups", $template_group);
+	
+	$templates = array();
+	$templates[] = array(
+		"title" => "karmastars_postbit",
+	       "template" => "<a href=\"{\$mybb->settings['bburl']}/misc.php?action=karmastars\" target=\"_blank\"><img src=\"{\$mybb->settings['bburl']}/{\$karmastar['karmastar_image']}\" alt=\"{\$karmastar['karmastar_name']}\" title=\"{\$karmastar['karmastar_name']}\" /></a>"
+	);
+	$templates[] = array(
+		"title" => "karmastars_list",
+	       "template" => "<html>
+<head>
+<title>{\$lang->karmastars}</title>
+{\$headerinclude}
+</head>
+<body>
+{\$header}
+<table border=\"0\" cellspacing=\"{\$theme['borderwidth']}\" cellpadding=\"{\$theme['tablespace']}\" class=\"tborder\">
+	<tr>
+		<td class=\"thead\" colspan=\"3\">
+			<strong>{\$lang->karmastars}</strong>
+		</td>
+	</tr>
+	<tr>
+		<td class=\"tcat\" align=\"center\">
+			<strong>{\$lang->karmastars_image}</strong>
+		</td>
+		<td class=\"tcat\" align=\"center\">
+			<strong>{\$lang->karmastars_posts}</strong>
+		</td>
+		<td class=\"tcat\">
+			<strong>{\$lang->karmastars_name}</strong>
+		</td>
+	</tr>
+	{\$karmastars_list}
+</table>
+{\$footer}
+</body>
+</html>"
+	);
+	$templates[] = array(
+		"title" => "karmastars_list_row",
+	       "template" => "<tr{\$selected}>
+	<td class=\"{\$trow}\" align=\"center\">
+		<img src=\"{\$mybb->settings['bburl']}/{\$karmastar['karmastar_image']}\" alt=\"{\$karmastar['karmastar_name']}\" title=\"{\$karmastar['karmastar_name']}\" />
+	</td>
+	<td class=\"{\$trow}\" align=\"center\">
+		{\$karmastar['karmastar_posts']}
+	</td>
+	<td class=\"{\$trow}\">
+		{\$karmastar['karmastar_name']}
+	</td>
+</tr>"
+	);
+	
+	foreach($templates as $template)
+	{
+		$insert = array(
+			"title" => $db->escape_string($template['title']),
+			"template" => $db->escape_string($template['template']),
+			"sid" => "-1",
+			"version" => "1600",
+			"status" => "",
+			"dateline" => TIME_NOW
+		);
+		
+		$db->insert_query("templates", $insert);
+	}
 }
 
 function karmastars_deactivate()
 {
+	global $db;
+	
 	require_once MYBB_ROOT . 'inc/adminfunctions_templates.php';
 	
 	find_replace_templatesets("postbit", "#".preg_quote('{$post[\'karmastar\']}')."#i", '', 0);
 	find_replace_templatesets("postbit_classic", "#".preg_quote('{$post[\'karmastar\']}')."#i", '', 0);
+	
+	$db->delete_query("templategroups", "prefix = 'karmastars'");
+	$db->delete_query("templates", "title IN ('karmastars_postbit','karmastars_list','karmastars_list_row')");
 }
 
 function karmastars_cache()
@@ -232,13 +314,42 @@ function karmastars_get_karma($posts)
 
 function karmastars_postbit(&$post)
 {
-	global $mybb;
+	global $mybb, $templates;
 	
 	$post['karmastar'] = '';
 	$karmastar = karmastars_get_karma(str_replace(',', '', $post['postnum']));
 	if($karmastar)
 	{
-		$post['karmastar'] = '<img src="'.$mybb->settings['bburl'].'/'.$karmastar['karmastar_image'].'" alt="'.$karmastar['karmastar_name'].'" title="'.$karmastar['karmastar_name'].'" />';
+		eval("\$post['karmastar'] = \"".$templates->get('karmastars_postbit')."\";");
+	}
+}
+
+function karmastars_list()
+{
+	global $mybb, $cache, $lang, $templates, $theme, $header, $headerinclude, $footer, $karmastars_list;
+	
+	if($mybb->input['action'] == 'karmastars')
+	{
+		$lang->load('karmastars');
+		
+		$karmastars = $cache->read('karmastars');
+		foreach($karmastars as $karmastar)
+		{
+			$trow = alt_trow();
+			$selected = '';
+			if($mybb->user['uid'])
+			{
+				$user_karmastar = karmastars_get_karma($mybb->user['postnum']);
+				if($user_karmastar['karmastar_id'] == $karmastar['karmastar_id'])
+				{
+					$selected = ' class="trow_selected"';
+				}
+			}
+			eval("\$karmastars_list .= \"".$templates->get('karmastars_list_row')."\";");
+		}
+		
+		eval("\$karmastars_page = \"".$templates->get('karmastars_list')."\";");
+		output_page($karmastars_page);
 	}
 }
 

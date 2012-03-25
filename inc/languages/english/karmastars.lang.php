@@ -17,5 +17,8 @@
  * limitations under the License.
 **/
 
-
+$l['karmastars'] = 'Karma Stars';
+$l['karmastars_image'] = 'Image';
+$l['karmastars_posts'] = 'Posts';
+$l['karmastars_name'] = 'Name';
 ?>
