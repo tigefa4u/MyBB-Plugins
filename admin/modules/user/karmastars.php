@@ -72,6 +72,7 @@ if($mybb->request_method == 'post')
 		{
 			$db->insert_query('karmastars', $insert);
 		}
+		karmastars_cache();
 		flash_message($lang->karmastars_update_success, 'success');
 		admin_redirect('index.php?module=user-karmastars');
 	}

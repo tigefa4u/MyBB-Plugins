@@ -22,6 +22,7 @@ if(!defined("IN_MYBB"))
 	die("Direct initialization of this file is not allowed.<br /><br />Please make sure IN_MYBB is defined.");
 }
 
+$plugins->add_hook("postbit", "karmastars_postbit");
 $plugins->add_hook("admin_user_menu", "karmastars_admin_user_menu");
 $plugins->add_hook("admin_user_action_handler", "karmastars_admin_user_action_handler");
 $plugins->add_hook("admin_user_permissions", "karmastars_admin_user_permissions");
@@ -44,7 +45,7 @@ function karmastars_install()
 {
 	global $db;
 	
-	plugingitsync_uninstall();
+	karmastars_uninstall();
 	
 	if(!$db->table_exists('karmastars'))
 	{
@@ -157,6 +158,7 @@ function karmastars_install()
 			);
 			$db->insert_query('karmastars', $insert);
 		}
+		karmastars_cache();
 	}
 }
 
@@ -175,16 +177,69 @@ function karmastars_uninstall()
 	{
 		$db->drop_table('karmastars');
 	}
+	
+	$db->delete_query('datacache', 'title = \'karmastars\'');
 }
 
 function karmastars_activate()
 {
+	require_once MYBB_ROOT . 'inc/adminfunctions_templates.php';
 	
+	find_replace_templatesets("postbit", "#".preg_quote('{$post[\'onlinestatus\']}')."#i", '{$post[\'karmastar\']}{$post[\'onlinestatus\']}');
+	find_replace_templatesets("postbit_classic", "#".preg_quote('{$post[\'onlinestatus\']}')."#i", '{$post[\'karmastar\']}{$post[\'onlinestatus\']}');
 }
 
 function karmastars_deactivate()
 {
+	require_once MYBB_ROOT . 'inc/adminfunctions_templates.php';
 	
+	find_replace_templatesets("postbit", "#".preg_quote('{$post[\'karmastar\']}')."#i", '', 0);
+	find_replace_templatesets("postbit_classic", "#".preg_quote('{$post[\'karmastar\']}')."#i", '', 0);
+}
+
+function karmastars_cache()
+{
+	global $db, $cache;
+	
+	$query = $db->simple_select('karmastars', '*', '', array('order_by' => 'karmastar_posts', 'order_dir' => 'ASC'));
+	$karmastars = array();
+	while($karmastar = $db->fetch_array($query))
+	{
+		$karmastars[] = $karmastar;
+	}
+	$cache->update('karmastars', $karmastars);
+}
+
+function karmastars_get_karma($posts)
+{
+	global $cache;
+	
+	$posts = intval($posts);
+	
+	$karmastars = $cache->read('karmastars');
+	$karmastars = array_reverse($karmastars);
+	
+	foreach($karmastars as $karmastar)
+	{
+		if($posts >= $karmastar['karmastar_posts'])
+		{
+			return $karmastar;
+		}
+	}
+	
+	return false;
+}
+
+function karmastars_postbit(&$post)
+{
+	global $mybb;
+	
+	$post['karmastar'] = '';
+	$karmastar = karmastars_get_karma(str_replace(',', '', $post['postnum']));
+	if($karmastar)
+	{
+		$post['karmastar'] = '<img src="'.$mybb->settings['bburl'].'/'.$karmastar['karmastar_image'].'" alt="'.$karmastar['karmastar_name'].'" title="'.$karmastar['karmastar_name'].'" />';
+	}
 }
 
 function karmastars_admin_user_menu($sub_menu)
@@ -217,5 +272,14 @@ function karmastars_admin_user_permissions($admin_permissions)
 	$admin_permissions['karmastars'] = $lang->can_manage_karmastars;
 	
 	return $admin_permissions;
+}
+
+function karmastars_list_images()
+{
+	$karmastars = opendir(MYBB_ROOT.'images/karmastars/');
+	while(($image = readdir($karmastars)) !== false)
+	{
+		echo 'images/karmastars/'.$image.'<br />';
+	}
 }
 ?>
