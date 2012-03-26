@@ -202,11 +202,11 @@ function karmastars_activate()
 	$templates = array();
 	$templates[] = array(
 		"title" => "karmastars_postbit",
-	       "template" => "<a href=\"{\$mybb->settings['bburl']}/misc.php?action=karmastars\" target=\"_blank\"><img src=\"{\$mybb->settings['bburl']}/{\$karmastar['karmastar_image']}\" alt=\"{\$karmastar['karmastar_name']}\" title=\"{\$karmastar['karmastar_name']}\" /></a>"
+		"template" => "<a href=\"{\$mybb->settings['bburl']}/misc.php?action=karmastars\" target=\"_blank\"><img src=\"{\$mybb->settings['bburl']}/{\$karmastar['karmastar_image']}\" alt=\"{\$karmastar['karmastar_name']}\" title=\"{\$karmastar['karmastar_name']}\" /></a>"
 	);
 	$templates[] = array(
 		"title" => "karmastars_list",
-	       "template" => "<html>
+		"template" => "<html>
 <head>
 <title>{\$lang->karmastars}</title>
 {\$headerinclude}
@@ -238,7 +238,7 @@ function karmastars_activate()
 	);
 	$templates[] = array(
 		"title" => "karmastars_list_row",
-	       "template" => "<tr{\$selected}>
+		"template" => "<tr{\$selected}>
 	<td class=\"{\$trow}\" align=\"center\">
 		<img src=\"{\$mybb->settings['bburl']}/{\$karmastar['karmastar_image']}\" alt=\"{\$karmastar['karmastar_name']}\" title=\"{\$karmastar['karmastar_name']}\" />
 	</td>
@@ -247,6 +247,18 @@ function karmastars_activate()
 	</td>
 	<td class=\"{\$trow}\">
 		{\$karmastar['karmastar_name']}
+	</td>
+</tr>
+{\$karmastars_list_row_percentage}"
+	);
+	$templates[] = array(
+		"title" => "karmastars_list_row_percentage",
+		"template" => "<tr>
+	<td class=\"{\$trow}\" style=\"padding: 0;\" colspan=\"3\" align=\"center\">
+		<div style=\"width: 100%; position: relative; text-align: center; padding: 5px 0px;\">
+			<div style=\"width: {\$percentage_done}%; height: 100%; position: absolute; left: 0; top: 0; background: #D6ECA6;\"></div>
+			<div style=\"position: relative;\">{\$percentage_left}</div>
+		</div>
 	</td>
 </tr>"
 	);
@@ -276,7 +288,7 @@ function karmastars_deactivate()
 	find_replace_templatesets("postbit_classic", "#".preg_quote('{$post[\'karmastar\']}')."#i", '', 0);
 	
 	$db->delete_query("templategroups", "prefix = 'karmastars'");
-	$db->delete_query("templates", "title IN ('karmastars_postbit','karmastars_list','karmastars_list_row')");
+	$db->delete_query("templates", "title IN ('karmastars_postbit','karmastars_list','karmastars_list_row','karmastars_list_row_percentage')");
 }
 
 function karmastars_cache()
@@ -333,6 +345,8 @@ function karmastars_list()
 		$lang->load('karmastars');
 		
 		$karmastars = $cache->read('karmastars');
+		$next_karmastar_done = false;
+		$do_next_karmastar = false;
 		foreach($karmastars as $karmastar)
 		{
 			$trow = alt_trow();
@@ -340,9 +354,28 @@ function karmastars_list()
 			if($mybb->user['uid'])
 			{
 				$user_karmastar = karmastars_get_karma($mybb->user['postnum']);
+				$next_karmastar = 0;
+				$karmastars_list_row_percentage = '';
 				if($user_karmastar['karmastar_id'] == $karmastar['karmastar_id'])
 				{
 					$selected = ' class="trow_selected"';
+					$next_karmastar = $user_karmastar['karmastar_id'];
+					$do_next_karmastar = true;
+				}
+				if(!$next_karmastar_done && !$user_karmastar)
+				{
+					$do_next_karmastar = true;
+					$karmastar['karmastar_posts'] = 0;
+				}
+				if(!$next_karmastar_done && $do_next_karmastar && (($next_karmastar && array_key_exists($next_karmastar, $karmastars)) || !$next_karmastar))
+				{
+					$posts_difference = $karmastars[$next_karmastar]['karmastar_posts'] - $karmastar['karmastar_posts'];
+					$posts_done = $mybb->user['postnum'] - $karmastar['karmastar_posts'];
+					$posts_left = $karmastars[$next_karmastar]['karmastar_posts'] - $mybb->user['postnum'];
+					$percentage_done = round(($posts_done / $posts_difference) * 100);
+					$next_karmastar_done = true;
+					$percentage_left = $lang->sprintf($lang->karmastars_next_level, $posts_left);
+					eval("\$karmastars_list_row_percentage .= \"".$templates->get('karmastars_list_row_percentage')."\";");
 				}
 			}
 			eval("\$karmastars_list .= \"".$templates->get('karmastars_list_row')."\";");

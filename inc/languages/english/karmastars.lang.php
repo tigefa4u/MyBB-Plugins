@@ -21,4 +21,5 @@ $l['karmastars'] = 'Karma Stars';
 $l['karmastars_image'] = 'Image';
 $l['karmastars_posts'] = 'Posts';
 $l['karmastars_name'] = 'Name';
+$l['karmastars_next_level'] = 'Posts until next level: {1}';
 ?>
