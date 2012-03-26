@@ -306,9 +306,9 @@ function karmastars_cache()
 
 function karmastars_get_karma($posts)
 {
-	global $cache;
+	global $mybb, $cache;
 	
-	$posts = intval($posts);
+	$posts = intval(str_replace($mybb->settings['thousandssep'], '', $posts));
 	
 	$karmastars = $cache->read('karmastars');
 	$karmastars = array_reverse($karmastars);
@@ -329,7 +329,7 @@ function karmastars_postbit(&$post)
 	global $mybb, $templates;
 	
 	$post['karmastar'] = '';
-	$karmastar = karmastars_get_karma(str_replace(',', '', $post['postnum']));
+	$karmastar = karmastars_get_karma($post['postnum']);
 	if($karmastar)
 	{
 		eval("\$post['karmastar'] = \"".$templates->get('karmastars_postbit')."\";");
