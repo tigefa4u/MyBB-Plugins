@@ -693,7 +693,18 @@ else
 			window.location = url+'&show='+this.value;
 		});
 	});
-	</script>";
+	</script>
+	<style type=\"text/css\">
+	.popup_button {
+		background: 0;
+		border: 0;
+		font-weight: normal;
+	}
+	.popup_menu {
+		font-weight: normal;
+		margin-left: 5px;
+	}
+	</style>";
 	
 	$form = new Form("index.php?module=tools-plugingitsync&amp;action=do_sync", "post");
 	$form_container = new FormContainer($lang->plugingitsync);
@@ -884,6 +895,7 @@ else
 				$files .= '<div class="file_row">'.$form->generate_check_box('files['.$info['repo_name'].'][]', $file, '', array('checked' => $checked, 'id' => 'file_'.$md5_file_name)).' <label for="file_'.$md5_file_name.'" style="font-weight: normal;">./'.$file.'</label>'.$diff_link.'<br />'.$error_git_copy.$error_working_copy.$diff.'</div>';
 			}
 		}
+		
 		if(($mybb->input['show'] == 'plugins_with_changes' || $mybb->input['show'] == 'files_with_changes') && !$plugin_has_changes)
 		{
 			continue;
@@ -892,20 +904,23 @@ else
 		{
 			$row_style = array('style' => 'background: #D6ECA6;');
 		}
-		$links = '';
+		
+		$popup = new PopupMenu("plugin_{$info['codename']}", $lang->plugingitsync_manage_plugins_controls);
 		if($mybb->input['sync_direction'] != 'to_forum')
 		{
-			$links .= ' <a href="index.php?module=tools-plugingitsync&action=edit&plugin='.$info['codename'].'">'.$lang->plugingitsync_manage_plugins_edit.'</a>';
+			$popup->add_item($lang->plugingitsync_manage_plugins_edit, 'index.php?module=tools-plugingitsync&action=edit&plugin='.$info['codename']);
 		}
 		if(@file_exists(GIT_REPO_ROOT.$info['repo_name'].REPO_README_PATH))
 		{
-			$links .= ' - <a href="index.php?module=tools-plugingitsync&action=edit_readme&plugin='.$info['codename'].'">'.$lang->plugingitsync_manage_plugins_edit_readme.'</a>';
+			$popup->add_item($lang->plugingitsync_manage_plugins_edit_readme, 'index.php?module=tools-plugingitsync&action=edit_readme&plugin='.$info['codename']);
 		}
 		if(!empty($info['repo_url']))
 		{
-			$links .= ' - <a href="'.$info['repo_url'].'" target="_blank">'.$lang->plugingitsync_manage_plugins_view_repo.'</a>';
+			$popup->add_item($lang->plugingitsync_manage_plugins_view_repo, $info['repo_url'], 'window.open(\''.$info['repo_url'].'\'); return false;');
 		}
-		$form_container->output_row($info['repo_name'].$links, '', $files, '', $row_style);
+		$popup = $popup->fetch();
+		
+		$form_container->output_row($info['repo_name'].$links.$popup, '', $files, '', $row_style);
 		$rows++;
 	}
 	
