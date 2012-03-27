@@ -23,6 +23,7 @@ if(!defined("IN_MYBB"))
 }
 
 $plugins->add_hook("postbit", "karmastars_postbit");
+$plugins->add_hook("member_profile_end", "karmastars_profile");
 $plugins->add_hook("misc_start", "karmastars_list");
 $plugins->add_hook("admin_user_menu", "karmastars_admin_user_menu");
 $plugins->add_hook("admin_user_action_handler", "karmastars_admin_user_action_handler");
@@ -192,6 +193,7 @@ function karmastars_activate()
 	
 	find_replace_templatesets("postbit", "#".preg_quote('{$post[\'onlinestatus\']}')."#i", '{$post[\'karmastar\']}{$post[\'onlinestatus\']}');
 	find_replace_templatesets("postbit_classic", "#".preg_quote('{$post[\'onlinestatus\']}')."#i", '{$post[\'karmastar\']}{$post[\'onlinestatus\']}');
+	find_replace_templatesets("member_profile", "#".preg_quote('<span class="largetext"><strong>{$formattedname}</strong></span><br />')."#i", '<span class="largetext"><strong>{$formattedname}</strong></span>{$memprofile[\'karmastar\']}<br />');
 	
 	$template_group = array(
 		"prefix" => "karmastars",
@@ -286,6 +288,7 @@ function karmastars_deactivate()
 	
 	find_replace_templatesets("postbit", "#".preg_quote('{$post[\'karmastar\']}')."#i", '', 0);
 	find_replace_templatesets("postbit_classic", "#".preg_quote('{$post[\'karmastar\']}')."#i", '', 0);
+	find_replace_templatesets("member_profile", "#".preg_quote('{$memprofile[\'karmastar\']}')."#i", '', 0);
 	
 	$db->delete_query("templategroups", "prefix = 'karmastars'");
 	$db->delete_query("templates", "title IN ('karmastars_postbit','karmastars_list','karmastars_list_row','karmastars_list_row_percentage')");
@@ -333,6 +336,18 @@ function karmastars_postbit(&$post)
 	if($karmastar)
 	{
 		eval("\$post['karmastar'] = \"".$templates->get('karmastars_postbit')."\";");
+	}
+}
+
+function karmastars_profile()
+{
+	global $mybb, $templates, $memprofile;
+	
+	$memprofile['karmastar'] = '';
+	$karmastar = karmastars_get_karma($memprofile['postnum']);
+	if($karmastar)
+	{
+		eval("\$memprofile['karmastar'] = \"".$templates->get('karmastars_postbit')."\";");
 	}
 }
 
