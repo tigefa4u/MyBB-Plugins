@@ -485,6 +485,25 @@ elseif($mybb->input['action'] == 'import_config')
 	
 	$page->output_footer();
 }
+elseif($mybb->input['action'] == 'export_zip')
+{
+	$plugin = $mybb->input['plugin'];
+	$query = $db->simple_select('plugingitsync', '*', 'plugin_codename = \''.$db->escape_string($plugin).'\'');
+	$plugin_info = $db->fetch_array($query);
+	$plugin_files = @unserialize($plugin_info['plugin_files']);
+	
+	$zip = new ZipArchive;
+	$archive = $zip->open($plugin.'.zip', ZipArchive::CREATE);
+	foreach($plugin_files as $file)
+	{
+		$zip->addFile(MYBB_ROOT.$file, $file);
+	}
+	$zip->close();
+	
+	header('Content-type: application/zip');
+	readfile($archive);
+	exit;
+}
 elseif($mybb->input['action'] == 'copy_to_global')
 {
 	if(!defined('GLOBAL_REPO_NAME') || GLOBAL_REPO_NAME == '')
@@ -918,6 +937,8 @@ else
 		{
 			$popup->add_item($lang->plugingitsync_manage_plugins_view_repo, $info['repo_url'], 'window.open(\''.$info['repo_url'].'\'); return false;');
 		}
+		$popup->add_item($lang->plugingitsync_manage_plugins_export_zip_files, 'index.php?module=tools-plugingitsync&action=export_zip&export=files&plugin='.$info['codename']);
+		$popup->add_item($lang->plugingitsync_manage_plugins_export_zip_all, 'index.php?module=tools-plugingitsync&action=export_zip&export=all&plugin='.$info['codename']);
 		$popup = $popup->fetch();
 		
 		$form_container->output_row($info['repo_name'].$links.$popup, '', $files, '', $row_style);

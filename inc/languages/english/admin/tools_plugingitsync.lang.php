@@ -97,4 +97,6 @@ $l['plugingitsync_manage_plugins_edit'] = 'Edit Settings';
 $l['plugingitsync_manage_plugins_submit'] = 'Submit';
 $l['plugingitsync_manage_plugins_edit_readme'] = 'Edit Readme';
 $l['plugingitsync_manage_plugins_view_repo'] = 'View Repo';
+$l['plugingitsync_manage_plugins_export_zip_files'] = 'Export Zip (Files)';
+$l['plugingitsync_manage_plugins_export_zip_all'] = 'Export Zip (Everything)';
 ?>
