@@ -490,18 +490,40 @@ elseif($mybb->input['action'] == 'export_zip')
 	$plugin = $mybb->input['plugin'];
 	$query = $db->simple_select('plugingitsync', '*', 'plugin_codename = \''.$db->escape_string($plugin).'\'');
 	$plugin_info = $db->fetch_array($query);
-	$plugin_files = @unserialize($plugin_info['plugin_files']);
 	
+	if($mybb->input['export'] == 'files')
+	{
+		$plugin_files = plugingitsync_find_files(GIT_REPO_ROOT.$plugin_info['plugin_repo_name'].REPO_FILE_ROOT);
+	}
+	else
+	{
+		$plugin_files = plugingitsync_find_files(GIT_REPO_ROOT.$plugin_info['plugin_repo_name']);
+	}
+	//echo '<pre>';print_r($plugin_files);echo '</pre>';exit;
+	
+	$tempfile = tempnam('.', '');
 	$zip = new ZipArchive;
-	$archive = $zip->open($plugin.'.zip', ZipArchive::CREATE);
+	$archive = $zip->open($tempfile, ZipArchive::CREATE);
 	foreach($plugin_files as $file)
 	{
-		$zip->addFile(MYBB_ROOT.$file, $file);
+		if(file_exists($file))
+		{
+			if($file == GIT_REPO_ROOT.$plugin_info['plugin_repo_name'].REPO_README_PATH)
+			{
+				$zip->addFile($file, str_replace(GIT_REPO_ROOT.$plugin_info['plugin_repo_name'].'/', '', $file));
+			}
+			else
+			{
+				$zip->addFile($file, str_replace(GIT_REPO_ROOT.$plugin_info['plugin_repo_name'].REPO_FILE_ROOT, '', $file));
+			}
+		}
 	}
 	$zip->close();
 	
-	header('Content-type: application/zip');
-	readfile($archive);
+	header('Content-Type: application/zip');
+	header('Content-Disposition: attachment; filename='.$plugin.'.zip'); 
+	readfile($tempfile);
+	@unlink($tempfile);
 	exit;
 }
 elseif($mybb->input['action'] == 'copy_to_global')

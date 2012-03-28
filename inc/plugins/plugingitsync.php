@@ -191,7 +191,7 @@ function plugingitsync_find_files($path)
 		$objects = scandir($path);
 		foreach($objects as $object)
 		{
-			if(!in_array($object, array(".", "..", "__MACOSX", ".DS_Store", "thumbs.db", ".svn", ".git")))
+			if(!in_array($object, array(".", "..", "__MACOSX", ".DS_Store", "thumbs.db", ".svn", ".git", ".gitignore")))
 			{
 				if(is_dir($path.'/'.$object))
 				{
