@@ -42,7 +42,7 @@ function karmastars_info()
 		"authorsite" => "http://mattrogowski.co.uk/mybb/",
 		"version" => "0.1",
 		"compatibility" => "16*",
-		"guid" => ""
+		"guid" => "72b9e7d4ba1c87d94bdfab7d14a01f5d"
 	);
 }
 
