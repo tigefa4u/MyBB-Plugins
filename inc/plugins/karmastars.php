@@ -401,6 +401,7 @@ function karmastars_list()
 			eval("\$karmastars_list .= \"".$templates->get('karmastars_list_row')."\";");
 		}
 		
+		add_breadcrumb($lang->karmastars);
 		eval("\$karmastars_page = \"".$templates->get('karmastars_list')."\";");
 		output_page($karmastars_page);
 	}
