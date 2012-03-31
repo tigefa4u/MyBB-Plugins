@@ -26,6 +26,8 @@ $plugins->add_hook("postbit", "karmastars_postbit");
 $plugins->add_hook("member_profile_end", "karmastars_profile");
 $plugins->add_hook("misc_start", "karmastars_list");
 $plugins->add_hook("global_start", "karmastars_footer");
+$plugins->add_hook("fetch_wol_activity_end", "karmastars_friendly_wol");
+$plugins->add_hook("build_friendly_wol_location_end", "karmastars_build_wol");
 $plugins->add_hook("admin_user_menu", "karmastars_admin_user_menu");
 $plugins->add_hook("admin_user_action_handler", "karmastars_admin_user_action_handler");
 $plugins->add_hook("admin_user_permissions", "karmastars_admin_user_permissions");
@@ -409,6 +411,28 @@ function karmastars_footer()
 	global $lang;
 	
 	$lang->load('karmastars');
+}
+
+function karmastars_friendly_wol(&$user_activity)
+{
+	global $user;
+	
+	if(my_strpos($user['location'], "misc.php?action=karmastars") !== false)
+	{
+		$user_activity['activity'] = "misc_karmastars";
+	}
+}
+
+function karmastars_build_wol(&$plugin_array)
+{
+	global $lang;
+	
+	$lang->load("karmastars");
+	
+	if($plugin_array['user_activity']['activity'] == "misc_karmastars")
+	{
+		$plugin_array['location_name'] = $lang->karmastars_wol;
+	}
 }
 
 function karmastars_admin_user_menu($sub_menu)
