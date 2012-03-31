@@ -437,7 +437,7 @@ if($mybb->input['action2'] == "do_upload")
 		// used to have this at the bottom, but there was a report of an error saying the class didn't exist... weird, but I'll just put it here instead
 		class MyPluginSystem extends pluginSystem
 		{
-			function add_hook()
+			function add_hook($hook, $function, $priority = 10, $file = '')
 			{
 				
 			}
