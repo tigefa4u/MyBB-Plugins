@@ -1,6 +1,6 @@
 <?php
 /**
- * Karma Stars 0.1 - Language File
+ * Karma Stars 1.0 - Language File
 
  * Copyright 2012 Matthew Rogowski
 

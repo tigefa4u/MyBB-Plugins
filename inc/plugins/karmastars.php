@@ -1,6 +1,6 @@
 <?php
 /**
- * Karma Stars 0.1
+ * Karma Stars 1.0
 
  * Copyright 2011 Matthew Rogowski
 
@@ -40,7 +40,7 @@ function karmastars_info()
 		"website" => "http://mattrogowski.co.uk/mybb/",
 		"author" => "MattRogowski",
 		"authorsite" => "http://mattrogowski.co.uk/mybb/",
-		"version" => "0.1",
+		"version" => "1.0",
 		"compatibility" => "16*",
 		"guid" => "72b9e7d4ba1c87d94bdfab7d14a01f5d"
 	);
