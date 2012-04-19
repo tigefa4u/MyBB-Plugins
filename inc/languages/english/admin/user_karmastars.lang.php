@@ -28,4 +28,7 @@ $l['karmastars_update_error_posts'] = 'Post count is missing';
 $l['karmastars_update_error_name'] = 'Name is missing';
 $l['karmastars_update_error_image'] = 'Image is missing';
 $l['karmastars_update_error_image_missing'] = 'Image doesn\'t exist';
+$l['karmastars_rows'] = 'Number of Karma Star Levels: ';
+$l['karmastars_submit'] = 'Submit';
+$l['karmastars_update'] = 'Update';
 ?>

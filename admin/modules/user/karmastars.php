@@ -17,7 +17,7 @@
  * limitations under the License.
 **/
 
-if($mybb->request_method == 'post')
+if($mybb->request_method == 'post' && !isset($_POST['karmastar_rows_submit']))
 {
 	//echo '<pre>';print_r($mybb->input['karmastars']);echo '</pre>';exit;
 	$errors = array();
@@ -95,7 +95,19 @@ while($karmastar = $db->fetch_array($query))
 	$karmastars[] = $karmastar;
 }
 //echo '<pre>';print_r($karmastars);echo '</pre>';
-for($i = 0; $i < 20; $i++)
+$karmastar_rows = 20;
+if(isset($_POST['karmastar_rows']) && $_POST['karmastar_rows'] > count($karmastars))
+{
+	$karmastar_rows = $_POST['karmastar_rows'];
+}
+elseif(count($karmastars) > 20)
+{
+	$karmastar_rows = count($karmastars);
+}
+$form_container->output_cell($lang->karmastars_rows.$form->generate_text_box('karmastar_rows', $karmastar_rows, array("style" => "width: 20px;")).' '.$form->generate_submit_button($lang->karmastars_update, array('name' => 'karmastar_rows_submit')), array("class" => "align_center", "colspan" => 4));
+$form_container->construct_row();
+
+for($i = 0; $i < $karmastar_rows; $i++)
 {
 	if(isset($_POST['karmastars'][$i]['image']))
 	{
@@ -169,7 +181,7 @@ for($i = 0; $i < 20; $i++)
 
 $form_container->end();
 
-$buttons[] = $form->generate_submit_button($lang->submit);
+$buttons[] = $form->generate_submit_button($lang->karmastars_submit);
 $form->output_submit_wrapper($buttons);
 $form->end();
 
