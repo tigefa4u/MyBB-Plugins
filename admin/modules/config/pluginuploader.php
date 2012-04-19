@@ -858,7 +858,7 @@ elseif($mybb->input['action2'] == "do_install")
 	// this will only work on PHP 5.3.4 and above as the follow_location option, which is the same as what's needed for the cURL request, is only available in PHP 5.3.4 and above
 	// however, unlike with cURL, it's set to true by default and doesn't care about safe_mode/open_basedir; so, if you have safe_mode or open_basedir enabled, but have PHP 5.3.4 or above, this method will work instead of cURL
 	// http://uk.php.net/manual/en/context.http.php
-	if(empty($result))
+	if(empty($result) && version_compare(PHP_VERSION, '5.3.4', '>='))
 	{
 		$params = array(
 			'http' => array(

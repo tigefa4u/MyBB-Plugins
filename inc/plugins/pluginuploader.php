@@ -451,7 +451,7 @@ function pluginuploader_admin_config_plugins_plugin_list_plugin(&$table)
 		}
 		else
 		{
-			$table->construct_cell("<a href=\"index.php?module=config-plugins&amp;action=pluginuploader&amp;action2=install&amp;plugin={$plugin_urls[trim($plugininfo['guid'])]}&amp;my_post_key={$mybb->post_code}\">{$lang->pluginuploader_reinstall}</a>", array("class" => "align_center", "width" => 150));
+			$table->construct_cell("<a href=\"index.php?module=config-plugins&amp;action=pluginuploader&amp;action2=install&amp;plugin={$plugin_urls[trim($plugininfo['guid'])]}&amp;my_post_key={$mybb->post_code}\">{$lang->pluginuploader_reimport}</a>", array("class" => "align_center", "width" => 150));
 		}
 	}
 }
