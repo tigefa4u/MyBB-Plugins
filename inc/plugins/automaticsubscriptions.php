@@ -1,6 +1,6 @@
 <?php
 /**
- * Automatic Subscriptions 1.0
+ * Automatic Subscriptions 1.1
 
  * Copyright 2011 Matthew Rogowski
 
@@ -29,6 +29,8 @@ $plugins->add_hook("usercp_do_options_end", "automaticsubscriptions_do_option");
 $plugins->add_hook("datahandler_post_insert_thread", "automaticsubscriptions_forum");
 $plugins->add_hook("datahandler_post_insert_thread_post", "automaticsubscriptions_thread");
 $plugins->add_hook("datahandler_post_insert_post", "automaticsubscriptions_thread");
+$plugins->add_hook("admin_formcontainer_output_row", "automaticsubscriptions_admin_formcontainer_output_row");
+$plugins->add_hook("admin_user_users_edit_commit", "automaticsubscriptions_admin_user_users_edit_commit");
 
 function automaticsubscriptions_info()
 {
@@ -38,7 +40,7 @@ function automaticsubscriptions_info()
 		"website" => "http://mattrogowski.co.uk/mybb/plugins/plugin/automatic-subscriptions",
 		"author" => "MattRogowski",
 		"authorsite" => "http://mattrogowski.co.uk/mybb/",
-		"version" => "1.0",
+		"version" => "1.1",
 		"compatibility" => "16*",
 		"guid" => "643337d2e48f9d677a42bb5767e7b5ae"
 	);
@@ -194,7 +196,7 @@ function automaticsubscriptions_forum(&$data)
 	// then subscribe them to the forum so they'll get an email about this new thread
 	$fid = intval($data->thread_insert_data['fid']);
 	$query = $db->query("
-		SELECT u.uid
+		SELECT u.uid, u.automaticsubscriptions
 		FROM " . TABLE_PREFIX . "users u
 		LEFT JOIN " . TABLE_PREFIX . "forumsubscriptions f
 		ON (u.uid = f.uid AND f.fid = '{$fid}')
@@ -214,7 +216,7 @@ function automaticsubscriptions_forum(&$data)
 		{
 			$query2 = $db->simple_select("forumsubscriptions", "*", "fid='".intval($fid)."' AND uid='".intval($user['uid'])."'", array('limit' => 1));
 			$fsubscription = $db->fetch_array($query2);
-			if(!$fsubscription['fid'])
+			if(!$fsubscription['fsid'])
 			{
 				continue;
 			}
@@ -238,7 +240,7 @@ function automaticsubscriptions_thread(&$data)
 	$tid = intval($data->post_insert_data['tid']);
 	$thread = get_thread($tid);
 	$query = $db->query("
-		SELECT u.uid, u.subscriptionmethod
+		SELECT u.uid, u.subscriptionmethod, u.automaticsubscriptions
 		FROM " . TABLE_PREFIX . "users u
 		LEFT JOIN " . TABLE_PREFIX . "threadsubscriptions t
 		ON (u.uid = t.uid AND t.tid = '{$tid}')
@@ -258,7 +260,7 @@ function automaticsubscriptions_thread(&$data)
 		{
 			$query2 = $db->simple_select("forumsubscriptions", "*", "fid='".intval($thread['fid'])."' AND uid='".intval($user['uid'])."'", array('limit' => 1));
 			$fsubscription = $db->fetch_array($query2);
-			if(!$fsubscription['fid'])
+			if(!$fsubscription['fsid'])
 			{
 				continue;
 			}
@@ -266,5 +268,28 @@ function automaticsubscriptions_thread(&$data)
 		
 		add_subscribed_thread($tid, $user['subscriptionmethod'], $user['uid']);
 	}
+}
+
+function automaticsubscriptions_admin_formcontainer_output_row($pluginargs)
+{
+	global $mybb, $lang, $form;
+	
+	if(!empty($lang->messaging_and_notification) && $pluginargs['title'] == $lang->messaging_and_notification)
+	{
+		$lang->load('automaticsubscriptions');
+		
+		$pluginargs['content'] = rtrim($pluginargs['content'], '</div>');
+		$pluginargs['content'] .= "</div><div class=\"user_settings_bit\"><label for=\"automaticsubscriptions\">{$lang->automaticsubscriptions_desc}</label><br />".$form->generate_select_box("automaticsubscriptions", array($lang->automaticsubscriptions_off, $lang->automaticsubscriptions_threads, $lang->automaticsubscriptions_threads_posts, $lang->automaticsubscriptions_threads_forum, $lang->automaticsubscriptions_threads_posts_forum), $mybb->input['automaticsubscriptions'], array('id' => 'automaticsubscriptions')).'</div>';
+	}
+}
+
+function automaticsubscriptions_admin_user_users_edit_commit()
+{
+	global $mybb, $db, $user;
+	
+	$update = array(
+		'automaticsubscriptions' => intval($mybb->input['automaticsubscriptions'])
+	);
+	$db->update_query('users', $update, 'uid = \''.intval($user['uid']).'\'');
 }
 ?>
