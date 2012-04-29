@@ -278,8 +278,7 @@ function automaticsubscriptions_admin_formcontainer_output_row($pluginargs)
 	{
 		$lang->load('automaticsubscriptions');
 		
-		$pluginargs['content'] = rtrim($pluginargs['content'], '</div>');
-		$pluginargs['content'] .= "</div><div class=\"user_settings_bit\"><label for=\"automaticsubscriptions\">{$lang->automaticsubscriptions_desc}</label><br />".$form->generate_select_box("automaticsubscriptions", array($lang->automaticsubscriptions_off, $lang->automaticsubscriptions_threads, $lang->automaticsubscriptions_threads_posts, $lang->automaticsubscriptions_threads_forum, $lang->automaticsubscriptions_threads_posts_forum), $mybb->input['automaticsubscriptions'], array('id' => 'automaticsubscriptions')).'</div>';
+		$pluginargs['content'] .= "<div class=\"user_settings_bit\"><label for=\"automaticsubscriptions\">{$lang->automaticsubscriptions_desc}</label><br />".$form->generate_select_box("automaticsubscriptions", array($lang->automaticsubscriptions_off, $lang->automaticsubscriptions_threads, $lang->automaticsubscriptions_threads_posts, $lang->automaticsubscriptions_threads_forum, $lang->automaticsubscriptions_threads_posts_forum), $mybb->input['automaticsubscriptions'], array('id' => 'automaticsubscriptions')).'</div>';
 	}
 }
 
