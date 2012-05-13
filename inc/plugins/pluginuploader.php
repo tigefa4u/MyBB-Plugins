@@ -517,10 +517,10 @@ class PluginUploader
 {
 	public $use_ftp = false;
 	public $ftp_connected = false;
-	public $ftp_connection;
-	public $ftp_host;
-	public $ftp_user;
-	public $ftp_password;
+	private $ftp_connection;
+	private $ftp_host;
+	private $ftp_user;
+	private $ftp_password;
 	public $using_ssl = false;
 	public $details_storage_location;
 
