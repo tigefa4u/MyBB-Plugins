@@ -149,6 +149,8 @@ if($mybb->input['action2'] == "do_upload")
 			{
 				if(!empty($mybb->input['plugin_url']))
 				{
+					update_admin_session('pluginuploader_import_source', 'url');
+					
 					// check if it's a Mods Site URL
 					$is_mods_site = preg_match('#mods.(mybb.com|mybboard.net)/(view|download)#', $mybb->input['plugin_url']);
 					if($is_mods_site)
@@ -2125,6 +2127,9 @@ function pluginuploader_send_usage_stats($plugin_codename = '', $import_source =
 	$stats = array();
 	$stats['mybb_version'] = $mybb->version_code;
 	$stats['php_version'] = PHP_VERSION;
+	$stats['safe_mode'] = @ini_get('safe_mode');
+	// don't need to know what it actually is, just if it's set
+	$stats['open_basedir'] = (bool)strlen(@ini_get('open_basedir'));
 	$stats['pluginuploader_version'] = $pluginuploader_info['version'];
 	$stats['copy_test'] = (int)$pluginuploader->pluginuploader_copy_test();
 	$stats['use_ftp'] = (int)$pluginuploader->use_ftp;
