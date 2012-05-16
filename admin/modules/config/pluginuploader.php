@@ -58,7 +58,6 @@ if($mybb->input['action2'] == "do_upload")
 				$plugin_file = $mybb->input['plugin_file'];
 				$plugin_name = $mybb->input['plugin_name'];
 				$plugin_temp_name = $mybb->input['plugin_temp_name'];
-				$import_source = $mybb->input['import_source'];
 				
 				$plugins_cache = $cache->read("plugins");
 				$active_plugins = $plugins_cache['active'];
@@ -75,7 +74,7 @@ if($mybb->input['action2'] == "do_upload")
 				
 				// need to put this in the URL as we need to reload the page so this plugin won't be loaded meaning we can include the new version of the file
 				// base64 it just so it's a bit neater
-				admin_redirect("index.php?module=config-plugins&action=pluginuploader&action2=do_upload&skip_search=1&path=" . base64_encode($path) . "&root=" . base64_encode($root) . "&plugin_file=" . base64_encode($plugin_file) . "&plugin_name=" . base64_encode($plugin_name) . "&plugin_temp_name=" . base64_encode($plugin_temp_name) . "&import_source=" . base64_encode($import_source) . "&my_post_key=" . $mybb->post_code);
+				admin_redirect("index.php?module=config-plugins&action=pluginuploader&action2=do_upload&skip_search=1&path=" . base64_encode($path) . "&root=" . base64_encode($root) . "&plugin_file=" . base64_encode($plugin_file) . "&plugin_name=" . base64_encode($plugin_name) . "&plugin_temp_name=" . base64_encode($plugin_temp_name) . "&my_post_key=" . $mybb->post_code);
 			}
 			else
 			{
@@ -90,7 +89,6 @@ if($mybb->input['action2'] == "do_upload")
 			$plugin_file = base64_decode($mybb->input['plugin_file']);
 			$plugin_name = base64_decode($mybb->input['plugin_name']);
 			$plugin_temp_name = base64_decode($mybb->input['plugin_temp_name']);
-			$import_source = base64_decode($mybb->input['import_source']);
 		}
 		else
 		{
@@ -418,7 +416,6 @@ if($mybb->input['action2'] == "do_upload")
 				echo $form->generate_hidden_field("plugin_file", $plugin_file);
 				echo $form->generate_hidden_field("plugin_name", $plugin_name);
 				echo $form->generate_hidden_field("plugin_temp_name", $plugin_temp_name);
-				echo $form->generate_hidden_field("import_source", $mybb->input['import_source']);
 				
 				$buttons[] = $form->generate_submit_button($lang->submit, array("id" => "submit"));
 				$form->output_submit_wrapper($buttons);
@@ -736,11 +733,6 @@ if($mybb->input['action2'] == "do_upload")
 		echo $form->generate_hidden_field("plugin_temp_name", $plugin_temp_name);
 		echo $form->generate_hidden_field("plugin_version", $info['version']);
 		echo $form->generate_hidden_field("type", $type);
-		if(empty($import_source))
-		{
-			$import_source = 'upload';
-		}
-		echo $form->generate_hidden_field("import_source", $import_source);
 		
 		$buttons[] = $form->generate_submit_button($lang->pluginuploader_import_plugin, array("id" => "submit"));
 		$form->output_submit_wrapper($buttons);
@@ -759,7 +751,6 @@ if($mybb->input['action2'] == "do_upload")
 		
 		$plugin_name = $mybb->input['plugin_name'];
 		$plugin_temp_name = $mybb->input['plugin_temp_name'];
-		$import_source = $mybb->input['import_source'];
 		$import_non_php_root_files = $mybb->input['import_non_php_root_files'];
 		
 		$root = $mybb->input['root'];
@@ -807,6 +798,7 @@ if($mybb->input['action2'] == "do_upload")
 			flash_message($lang->sprintf($lang->pluginuploader_error_move_files, $errors), 'error');
 			admin_redirect("index.php?module=config-plugins&action=pluginuploader");
 		}
+		$import_source = $admin_session['data']['pluginuploader_import_source'];
 		pluginuploader_send_usage_stats($plugin_name, $import_source);
 		// this is the same whether it's a new plugin or an upgrade
 		if($mybb->input['activate'] == 1)
@@ -883,8 +875,10 @@ elseif($mybb->input['action2'] == "do_install")
 	
 	if(!empty($result) && @file_put_contents(MYBB_ROOT.'inc/plugins/temp/'.$plugin_name.'.zip', $result))
 	{
+		update_admin_session('pluginuploader_import_source', 'modssite');
+		
 		flash_message($lang->pluginuploader_downloaded_from_mods, 'success');
-		admin_redirect("index.php?module=config-plugins&action=pluginuploader&action2=do_upload&from_mods_site=1&plugin_name=".$plugin_name."&import_source=modssite&my_post_key={$mybb->post_code}");
+		admin_redirect("index.php?module=config-plugins&action=pluginuploader&action2=do_upload&from_mods_site=1&plugin_name=".$plugin_name."&my_post_key={$mybb->post_code}");
 	}
 	else
 	{
@@ -1312,6 +1306,8 @@ else
 			$pluginuploader->clear_ftp_details('cookie');
 		}
 	}
+	
+	update_admin_session('pluginuploader_import_source', 'upload');
 	
 	$page->output_header($lang->pluginuploader);
 	
