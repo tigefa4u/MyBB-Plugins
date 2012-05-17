@@ -147,6 +147,15 @@ if($mybb->input['action2'] == "do_upload")
 			}
 			else
 			{
+				if(isset($mybb->input['send_usage_stats']) && $mybb->input['send_usage_stats'] == 1)
+				{
+					my_setcookie('mybb_pluginuploader_send_usage_stats', 'yes');
+				}
+				else
+				{
+					my_setcookie('mybb_pluginuploader_send_usage_stats', 'no');
+				}
+				
 				if(!empty($mybb->input['plugin_url']))
 				{
 					update_admin_session('pluginuploader_import_source', 'url');
@@ -800,8 +809,11 @@ if($mybb->input['action2'] == "do_upload")
 			flash_message($lang->sprintf($lang->pluginuploader_error_move_files, $errors), 'error');
 			admin_redirect("index.php?module=config-plugins&action=pluginuploader");
 		}
-		$import_source = $admin_session['data']['pluginuploader_import_source'];
-		pluginuploader_send_usage_stats($plugin_name, $import_source);
+		if($mybb->cookies['mybb_pluginuploader_send_usage_stats'] != 'no')
+		{
+			$import_source = $admin_session['data']['pluginuploader_import_source'];
+			pluginuploader_send_usage_stats($plugin_name, $import_source);
+		}
 		// this is the same whether it's a new plugin or an upgrade
 		if($mybb->input['activate'] == 1)
 		{
@@ -1415,6 +1427,18 @@ else
 				}
 				window.location = 'index.php?module=config-plugins&action=pluginuploader&action2=use_ftp&use_ftp='+use_ftp;
 			});
+			$('send_usage_stats_more').observe('click', function() {
+				if(this.text == '".$lang->pluginuploader_stats_less."')
+				{
+					this.update('".$lang->pluginuploader_stats_more."');
+					$('send_usage_stats_more_info').hide();
+				}
+				else
+				{
+					this.update('".$lang->pluginuploader_stats_less."');
+					$('send_usage_stats_more_info').show();
+				}
+			});
 		});
 		</script>";
 		
@@ -1547,6 +1571,15 @@ else
 			$ftp_content = $pluginuploader_ftp_desc.'<label for="use_ftp_checkbox" style="font-weight: normal;">'.$lang->pluginuploader_use_ftp.'</label>'.$form->generate_check_box('use_ftp_checkbox', 1, '', array('id' => 'use_ftp_checkbox', 'checked' => $use_ftp_checked)).'<br /><br /><span'.$ftp_content_style.'>'.$ftp_message.$ftp_details_stored_location.$pluginuploader_ftp_desc_links.'</span>'.$lang->pluginuploader_ftp_desc_extra;
 		}
 		$form_container->output_row($pluginuploader_ftp_title, "", $ftp_content);
+		
+		$checked = true;
+		$send_usage_stats = $mybb->cookies['mybb_pluginuploader_send_usage_stats'];
+		if($send_usage_stats == 'no')
+		{
+			$checked = false;
+		}
+		$form_container->output_row('', '', $form->generate_check_box("send_usage_stats", 1, '', array('checked' => $checked)).$lang->pluginuploader_stats."<br /><br />".$lang->pluginuploader_stats_desc.' <a href="javascript:void(0)" id="send_usage_stats_more">'.$lang->pluginuploader_stats_more.'</a><div id="send_usage_stats_more_info" style="display: none; font-style: italic;"><br />'.$lang->pluginuploader_stats_more_info.'</div>');
+		
 		$form_container->end();
 		
 		$buttons[] = $form->generate_submit_button($lang->submit, array("id" => "submit"));

@@ -168,4 +168,9 @@ $l['pluginuploader_ftp_details_added'] = "A successful FTP connection was made, 
 $l['pluginuploader_ftp_test_connection_save'] = "Test FTP Connection and Save";
 $l['pluginuploader_ftp_test_connection_fail'] = "An FTP connection could not be made with the specified FTP details. Please check they are correct and try again.";
 $l['pluginuploader_ftp_details_cleared'] = "Your FTP details have been cleared successfully.";
+$l['pluginuploader_stats'] = 'Send anonymous usage stats';
+$l['pluginuploader_stats_desc'] = 'This will log anonymous usage and server information to help debug and improve the Plugin Uploader.';
+$l['pluginuploader_stats_more'] = 'More information';
+$l['pluginuploader_stats_less'] = 'Less information';
+$l['pluginuploader_stats_more_info'] = 'The following information is sent to my server for debugging purposes:<ul><li>MD5 hash of your forum URL</li><li>MyBB version</li><li>PHP version</li><li>If safe_mode is enabled</li><li>If open_basedir is enabled</li><li>Plugin Uploader version</li><li>If PHP is able to move files</li><li>Whether FTP is being used</li><li>Whether FTP-SSL is being used</li><li>FTP details storage location (cookie or database)</li><li>Codename of plugin installed</li><li>Import Source (Upload, URL, MyBB Mods Site)</li></ul>This information is sent whenever a plugin is successfully imported. None of the information can be used to track where the information came from; the forum URL is sent so I\'m able to analyse information that came from the same site, however the actual URL cannot be retrieved (an MD5 hash can\'t be decrypted). This information is used to see what setups people use the Plugin Uploader on, which features are being used, and what could be improved.';
 ?>
