@@ -2125,15 +2125,17 @@ function pluginuploader_send_usage_stats($plugin_codename = '', $import_source =
 	$pluginuploader->ftp_connect();
 	
 	$stats = array();
+	$stats['mybb_url'] = md5($mybb->settings['bburl']);
 	$stats['mybb_version'] = $mybb->version_code;
 	$stats['php_version'] = PHP_VERSION;
-	$stats['safe_mode'] = @ini_get('safe_mode');
+	$stats['safe_mode'] = @ini_get('safe_mode')?1:0;
 	// don't need to know what it actually is, just if it's set
-	$stats['open_basedir'] = (bool)strlen(@ini_get('open_basedir'));
+	$stats['open_basedir'] = strlen(@ini_get('open_basedir'))?1:0;
 	$stats['pluginuploader_version'] = $pluginuploader_info['version'];
 	$stats['copy_test'] = (int)$pluginuploader->pluginuploader_copy_test();
 	$stats['use_ftp'] = (int)$pluginuploader->use_ftp;
 	$stats['use_ssl'] = (int)$pluginuploader->using_ssl;
+	$stats['ftp_storage_location'] = $pluginuploader->details_storage_location;
 	$stats['plugin_codename'] = $plugin_codename;
 	$stats['import_source'] = $import_source;
 	
