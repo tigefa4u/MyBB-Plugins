@@ -1459,17 +1459,20 @@ else
 				$('has_site_login').value = 0;
 				$('url_site_needs_login_checkbox').checked = false;
 			});
-			$('use_ftp_checkbox').observe('click', function() {
-				if($('use_ftp_checkbox').checked)
-				{
-					use_ftp = 1;
-				}
-				else
-				{
-					use_ftp = 0;
-				}
-				window.location = 'index.php?module=config-plugins&action=pluginuploader&action2=use_ftp&use_ftp='+use_ftp;
-			});
+			if($('use_ftp_checkbox').length)
+			{
+				$('use_ftp_checkbox').observe('click', function() {
+					if($('use_ftp_checkbox').checked)
+					{
+						use_ftp = 1;
+					}
+					else
+					{
+						use_ftp = 0;
+					}
+					window.location = 'index.php?module=config-plugins&action=pluginuploader&action2=use_ftp&use_ftp='+use_ftp;
+				});
+			}
 			$('send_usage_stats_more').observe('click', function() {
 				if(this.text == '".$lang->pluginuploader_stats_less."')
 				{
