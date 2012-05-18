@@ -1459,7 +1459,7 @@ else
 				$('has_site_login').value = 0;
 				$('url_site_needs_login_checkbox').checked = false;
 			});
-			if($('use_ftp_checkbox').length)
+			($('use_ftp_checkbox') != undefined)
 			{
 				$('use_ftp_checkbox').observe('click', function() {
 					if($('use_ftp_checkbox').checked)
