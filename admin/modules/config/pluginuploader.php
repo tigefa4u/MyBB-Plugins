@@ -858,23 +858,21 @@ elseif($mybb->input['action2'] == "do_install")
 	@ini_set('safe_mode', 0);
 	@ini_set('open_basedir', '');
 	
-	$ch = curl_init();
-	curl_setopt($ch,CURLOPT_URL,$url);
-	curl_setopt($ch,CURLOPT_POST,count($fields));
-	curl_setopt($ch,CURLOPT_POSTFIELDS,$fields_string);
-	curl_setopt($ch,CURLOPT_RETURNTRANSFER,true);
-	// thanks to Booher and Tim B for this next line!!
-	// errors are suppressed here as if safe_mode or open_basedir are enabled, you'll get an error
-	@curl_setopt($ch,CURLOPT_FOLLOWLOCATION,true);
-	$result = curl_exec($ch);
-	curl_close($ch);
-	
-	// thanks to Booher for suggesting this method
-	// we only need to try this if the cURL request returned nothing
-	// this will only work on PHP 5.3.4 and above as the follow_location option, which is the same as what's needed for the cURL request, is only available in PHP 5.3.4 and above
-	// however, unlike with cURL, it's set to true by default and doesn't care about safe_mode/open_basedir; so, if you have safe_mode or open_basedir enabled, but have PHP 5.3.4 or above, this method will work instead of cURL
-	// http://uk.php.net/manual/en/context.http.php
-	if(empty($result) && version_compare(PHP_VERSION, '5.3.4', '>='))
+	$mods_site_method = pluginuploader_can_use_mods_site(true);
+	if($mods_site_method == 'cURL')
+	{
+		$ch = curl_init();
+		curl_setopt($ch,CURLOPT_URL,$url);
+		curl_setopt($ch,CURLOPT_POST,count($fields));
+		curl_setopt($ch,CURLOPT_POSTFIELDS,$fields_string);
+		curl_setopt($ch,CURLOPT_RETURNTRANSFER,true);
+		// thanks to Booher and Tim B for this next line!!
+		// errors are suppressed here as if safe_mode or open_basedir are enabled, you'll get an error
+		@curl_setopt($ch,CURLOPT_FOLLOWLOCATION,true);
+		$result = curl_exec($ch);
+		curl_close($ch);
+	}
+	elseif($mods_site_method == 'stream')
 	{
 		$params = array(
 			'http' => array(
@@ -886,8 +884,17 @@ elseif($mybb->input['action2'] == "do_install")
 		$fp = @fopen($url, 'rb', false, $scc);
 		$result = @stream_get_contents($fp);
 	}
+	else
+	{
+		$error_message = $lang->pluginuploader_error_downloading_from_mods_error_ini;
+		if(version_compare(PHP_VERSION, '5.3.4', '<'))
+		{
+			$error_message .= ' '.$lang->pluginuploader_error_downloading_from_mods_error_php_version;
+		}
+		$error_message .= ' '.$lang->pluginuploader_error_downloading_from_mods_contact_host;
+	}
 	
-	if(!empty($result) && @file_put_contents(MYBB_ROOT.'inc/plugins/temp/'.$plugin_name.'.zip', $result))
+	if($mods_site_method != 'none' && !empty($result) && @file_put_contents(MYBB_ROOT.'inc/plugins/temp/'.$plugin_name.'.zip', $result))
 	{
 		update_admin_session('pluginuploader_import_source', 'modssite');
 		
@@ -896,24 +903,11 @@ elseif($mybb->input['action2'] == "do_install")
 	}
 	else
 	{
-		$error_message = '';
-		// if we get in here, the cURL request failed (as that's run first); check if safe_mode or open_basedir is enabled; if either of these are set, this is what stopped the cURL request working
-		if(@ini_get('safe_mode') == 1 || strtolower(@ini_get('safe_mode')) == 'on' || strlen(@ini_get('open_basedir')))
+		if($mods_site_method != 'none')
 		{
-			$error_message .= ' '.$lang->pluginuploader_error_downloading_from_mods_error_ini;
-			// if we get in here, then the PHP version is too old for the stream method to work; if the cURL request failed, the stream method would work if you had PHP 5.3.4 or higher
-			if(version_compare(PHP_VERSION, '5.3.4', '<'))
-			{
-				$error_message .= ' '.$lang->pluginuploader_error_downloading_from_mods_error_php_version;
-			}
-			$error_message .= ' '.$lang->pluginuploader_error_downloading_from_mods_contact_host;
+			$error_message = $lang->pluginuploader_error_downloading_from_mods_unknown_error;
 		}
-		// if neither of these are set, and the cURL request still failed, the MyBB Mods site may just be down
-		// however, there could still be some other weird server issue causing it to fail, so just in case, add an error saying to contact me to debug
-		else
-		{
-			$error_message .= ' '.$lang->pluginuploader_error_downloading_from_mods_unknown_error;
-		}
+		
 		flash_message($lang->sprintf($lang->pluginuploader_error_downloading_from_mods, $plugin_name).$error_message, 'error');
 		admin_redirect("index.php?module=config-plugins&action=pluginuploader");
 	}
@@ -1305,6 +1299,55 @@ elseif($mybb->input['action2'] == "clear_password")
 	
 	flash_message($lang->pluginuploader_password_cleared, 'success');
 	admin_redirect("index.php?module=config-plugins&action=pluginuploader");
+}
+elseif($mybb->input['action2'] == 'mods_site_integration')
+{
+	$page->add_breadcrumb_item($lang->pluginuploader_mods_site_title);
+	$page->output_header($lang->pluginuploader);
+	
+	$table = new Table;
+	
+	$table->construct_cell($lang->pluginuploader_mods_site_how_it_works);
+	$table->construct_row();
+	$server_table = '<table border="1" cellspacing="0" cellpadding="0">
+	<tr>
+		<td></td>
+		<td>'.$lang->pluginuploader_mods_site_server_table_php_534_lower.'</td>
+		<td>'.$lang->pluginuploader_mods_site_server_table_php_534_higher.'</td>
+	</tr>
+	<tr>
+		<td>'.$lang->pluginuploader_mods_site_server_table_ini_on.'</td>
+		<td><span style="color: red; font-weight: bold;">'.$lang->pluginuploader_mods_site_server_table_wont_work.'</span></td>
+		<td><span style="color: green; font-weight: bold;">'.$lang->pluginuploader_mods_site_server_table_will_work.'</span></td>
+	</tr>
+	<tr>
+		<td>'.$lang->pluginuploader_mods_site_server_table_ini_off.'</td>
+		<td><span style="color: green; font-weight: bold;">'.$lang->pluginuploader_mods_site_server_table_will_work.'</span></td>
+		<td><span style="color: green; font-weight: bold;">'.$lang->pluginuploader_mods_site_server_table_will_work.'</span></td>
+	</tr>
+</table>';
+	if(@ini_get('safe_mode') == 1 || strtolower(@ini_get('safe_mode')) == 'on')
+	{
+		$safe_mode = $lang->pluginuploader_mods_site_server_info_enabled;
+	}
+	else
+	{
+		$safe_mode = $lang->pluginuploader_mods_site_server_info_disabled;
+	}
+	if(strlen(@ini_get('open_basedir')))
+	{
+		$open_basedir = $lang->pluginuploader_mods_site_server_info_enabled;
+	}
+	else
+	{
+		$open_basedir = $lang->pluginuploader_mods_site_server_info_disabled;
+	}
+	$table->construct_cell($lang->pluginuploader_mods_site_why_it_wont_work.'<br /><br />'.$server_table.'<br />'.$lang->pluginuploader_mods_site_server_info.'<br />'.$lang->pluginuploader_mods_site_server_info_safe_mode.' '.$safe_mode.'<br />'.$lang->pluginuploader_mods_site_server_info_open_basedir.' '.$open_basedir.'<br />'.$lang->pluginuploader_mods_site_server_info_php_version.' '.PHP_VERSION.'<br />'.$lang->pluginuploader_mods_site_server_info_will_it_work.' '.(pluginuploader_can_use_mods_site()?$lang->pluginuploader_mods_site_server_info_will_it_work_yes:$lang->pluginuploader_mods_site_server_info_will_it_work_no));
+	$table->construct_row();
+	
+	echo $table->output($lang->pluginuploader_mods_site_title);
+	
+	$page->output_footer();
 }
 else
 {
@@ -2161,16 +2204,16 @@ function pluginuploader_send_usage_stats($plugin_codename = '', $import_source =
 	$stats['mybb_url'] = md5($mybb->settings['bburl']);
 	$stats['mybb_version'] = $mybb->version_code;
 	$stats['php_version'] = PHP_VERSION;
-	$stats['safe_mode'] = @ini_get('safe_mode')?1:0;
+	$stats['safe_mode'] = (@ini_get('safe_mode')!=''&&@ini_get('safe_mode')!='off')?1:0;
 	// don't need to know what it actually is, just if it's set
 	$stats['open_basedir'] = strlen(@ini_get('open_basedir'))?1:0;
 	$stats['pluginuploader_version'] = $pluginuploader_info['version'];
 	$stats['copy_test'] = (int)$pluginuploader->pluginuploader_copy_test();
 	$stats['use_ftp'] = (int)$pluginuploader->use_ftp;
-	$stats['use_ssl'] = (int)$pluginuploader->using_ssl;
 	$stats['ftp_storage_location'] = $pluginuploader->details_storage_location;
 	$stats['plugin_codename'] = $plugin_codename;
 	$stats['import_source'] = $import_source;
+	$stats['can_use_mods_site'] = pluginuploader_can_use_mods_site(true);
 	
 	fetch_remote_file('http://mattrogowski.co.uk/mybb/pluginuploader.php', $stats);
 }

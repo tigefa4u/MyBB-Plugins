@@ -451,7 +451,14 @@ function pluginuploader_admin_config_plugins_plugin_list_plugin(&$table)
 		}
 		else
 		{
-			$table->construct_cell("<a href=\"index.php?module=config-plugins&amp;action=pluginuploader&amp;action2=install&amp;plugin={$plugin_urls[trim($plugininfo['guid'])]}&amp;my_post_key={$mybb->post_code}\">{$lang->pluginuploader_reimport}</a>", array("class" => "align_center", "width" => 150));
+			if(pluginuploader_can_use_mods_site())
+			{
+				$table->construct_cell("<a href=\"index.php?module=config-plugins&amp;action=pluginuploader&amp;action2=install&amp;plugin={$plugin_urls[trim($plugininfo['guid'])]}&amp;my_post_key={$mybb->post_code}\">{$lang->pluginuploader_reimport}</a>", array("class" => "align_center", "width" => 150));
+			}
+			else
+			{
+				$table->construct_cell($lang->pluginuploader_mods_site_unavailable, array("class" => "align_center", "width" => 150));
+			}
 		}
 	}
 }
@@ -478,7 +485,14 @@ function pluginuploader_admin_config_plugins_plugin_updates_plugin(&$table)
 	}
 	else
 	{
-		$table->construct_cell("<a href=\"index.php?module=config-plugins&amp;action=pluginuploader&amp;action2=install&amp;plugin={$plugin['download_url']['value']}&amp;my_post_key={$mybb->post_code}\"><strong>{$lang->pluginuploader_upgrade}</strong></a>", array("class" => "align_center", "width" => 150));
+		if(pluginuploader_can_use_mods_site())
+		{
+			$table->construct_cell("<a href=\"index.php?module=config-plugins&amp;action=pluginuploader&amp;action2=install&amp;plugin={$plugin['download_url']['value']}&amp;my_post_key={$mybb->post_code}\"><strong>{$lang->pluginuploader_upgrade}</strong></a>", array("class" => "align_center", "width" => 150));
+		}
+		else
+		{
+			$table->construct_cell($lang->pluginuploader_mods_site_unavailable, array("class" => "align_center", "width" => 150));
+		}
 	}
 }
 
@@ -504,7 +518,59 @@ function pluginuploader_admin_config_plugins_browse_plugins_plugin(&$table)
 	}
 	else
 	{
-		$table->construct_cell("<a href=\"index.php?module=config-plugins&amp;action=pluginuploader&amp;action2=install&amp;plugin={$result['download_url']['value']}&amp;my_post_key={$mybb->post_code}\"><strong>{$lang->pluginuploader_install}</strong></a>", array("class" => "align_center", "width" => 150));
+		if(pluginuploader_can_use_mods_site())
+		{
+			$table->construct_cell("<a href=\"index.php?module=config-plugins&amp;action=pluginuploader&amp;action2=install&amp;plugin={$result['download_url']['value']}&amp;my_post_key={$mybb->post_code}\"><strong>{$lang->pluginuploader_install}</strong></a>", array("class" => "align_center", "width" => 150));
+		}
+		else
+		{
+			$table->construct_cell($lang->pluginuploader_mods_site_unavailable, array("class" => "align_center", "width" => 150));
+		}
+	}
+}
+
+function pluginuploader_can_use_mods_site($return_method = false)
+{
+	// cURL won't allow followlocation if either of these are set
+	if(@ini_get('safe_mode') == 1 || strtolower(@ini_get('safe_mode')) == 'on' || strlen(@ini_get('open_basedir')))
+	{
+		// if cURL won't work, opening a HTTP context stream will, but only if you're on PHP 5.3.4 or higher
+		// this has followlocation set to true by default, and it doesn't care about safe_mode/open_basedir, but is only available from PHP 5.3.4 and higher
+		// http://uk.php.net/manual/en/context.http.php
+		if(version_compare(PHP_VERSION, '5.3.4', '>='))
+		{
+			if($return_method)
+			{
+				return 'stream';
+			}
+			else
+			{
+				return true;
+			}
+		}
+		else
+		{
+			if($return_method)
+			{
+				return 'none';
+			}
+			else
+			{
+				return false;
+			}
+		}
+	}
+	// cURL will work
+	else
+	{
+		if($return_method)
+		{
+			return 'cURL';
+		}
+		else
+		{
+			return true;
+		}
 	}
 }
 
