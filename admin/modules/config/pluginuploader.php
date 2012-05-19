@@ -1543,7 +1543,7 @@ else
 				'</span>
 			</fieldset>'.
 			$lang->pluginuploader_plugin_desc_warning.'<br /><br />'.
-			'<fieldset><legend>'.$lang->pluginuploader_plugin_mods_site.'</legend>'.$lang->pluginuploader_plugin_mods_site_desc.'</fieldset>'
+			'<fieldset><legend>'.$lang->pluginuploader_plugin_mods_site.'</legend>'.(pluginuploader_can_use_mods_site()?$lang->pluginuploader_plugin_mods_site_desc:$lang->pluginuploader_plugin_mods_site_unavailable_desc).'</fieldset>'
 		);
 		
 		if(!DISABLE_PLUGINUPLOADER_PASSWORD)
