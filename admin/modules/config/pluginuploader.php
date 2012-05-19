@@ -1602,7 +1602,7 @@ else
 		{
 			if($ftp_connect_check == 'missing_config')// || $ftp_connect_check == 'config_wrong')
 			{
-				$key = random_str(32);
+				$key = $pluginuploader->generate_config_ftp_key();
 				$config_code = "<pre style=\"margin: 0;\">".str_replace(array("&lt;?php&nbsp;", "?&gt;"), "", highlight_string("<?php \$config['pluginuploader_ftp_key'] = '{$key}'; ?>", true))."</pre>";
 				$br = '';
 			}

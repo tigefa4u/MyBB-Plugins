@@ -674,7 +674,13 @@ class PluginUploader
 			}
 			return false;
 		}
-
+		
+		// check if the FTP key exists; if not, try and add it automatically
+		if(!$mybb->config['pluginuploader_ftp_key'])
+		{
+			$this->add_config_ftp_key();
+		}
+		// if it's still not there, then error
 		if(!$mybb->config['pluginuploader_ftp_key'])
 		{
 			if($return_error)
@@ -1083,7 +1089,48 @@ class PluginUploader
 
 		return false;
 	}
-
+	
+	/**
+	 * Generate an FTP key
+	**/
+	public function generate_config_ftp_key()
+	{
+		return random_str(32);
+	}
+	
+	/**
+	 * Tries to add the FTP key to config.php automatically
+	**/
+	public function add_config_ftp_key()
+	{
+		global $mybb;
+		
+		if(!is_writable(MYBB_ROOT.'inc/config.php'))
+		{
+			return false;
+		}
+		
+		$ftp_key = $this->generate_config_ftp_key();
+		
+		$config_lines = explode("\n", file_get_contents(MYBB_ROOT.'inc/config.php'));
+		foreach($config_lines as &$line)
+		{
+			if($line == '?>')
+			{
+				$line = '';
+				$config_lines[] = '$config[\'pluginuploader_ftp_key\'] = \''.$ftp_key.'\';';
+				$config_lines[] = '?>';
+			}
+		}
+		if(file_put_contents(MYBB_ROOT.'inc/config.php', implode("\n", $config_lines)))
+		{
+			$mybb->config['pluginuploader_ftp_key'] = $ftp_key;
+			return true;
+		}
+		
+		return false;
+	}
+	
 	/**
 	 * Replace 'admin' in the file path to compensate for renamed admin folders
 	**/
