@@ -179,11 +179,11 @@ $l['pluginuploader_mods_site_how_it_works'] = '<h2>How does it work?</h2>When yo
 $l['pluginuploader_mods_site_why_it_wont_work'] = '<h2>It doesn\'t work/isn\'t available for me!</h2>There are various server configuration options that may prevent plugins to be imported from the Mods Site. It isn\'t possible to download the plugin zip directly; the name of the zip is made up of the ID of the plugin, the UNIX timestamp of when it was uploaded and the name of the original zip, and none of this information is available other than from the name of the downloaded zip, and we haven\'t got that yet! Normally when you agree to the licence on the Mods Site, it submits a form that then serves up the zip and offers it for download in your browser. It is possible to replicate this with PHP, and save the returned zip to the filesystem, but it has certain requirements. If safe_mode or open_basedir is enabled on your server, the standard method (cURL) will not work in the way required for importing from the Mods site, due to the way it works. There is a secondary method that can be used instead, however this is only available if you are using PHP 5.3.4 or higher. The below table shows which setups will work and which won\'t.';
 $l['pluginuploader_mods_site_server_table_php_534_lower'] = 'Lower than PHP 5.3.4';
 $l['pluginuploader_mods_site_server_table_php_534_higher'] = 'PHP 5.3.4 or higher';
-$l['pluginuploader_mods_site_server_table_ini_on'] = 'safe_mode <strong>and/or</strong> open_basedir <strong>on</strong>';
-$l['pluginuploader_mods_site_server_table_ini_off'] = 'safe_mode <strong>and</strong> open_basedir <strong>off</strong>';
+$l['pluginuploader_mods_site_server_table_ini_on'] = 'safe_mode <strong>and/or</strong> open_basedir <strong>enabled</strong>';
+$l['pluginuploader_mods_site_server_table_ini_off'] = 'safe_mode <strong>and</strong> open_basedir <strong>disabled</strong>';
 $l['pluginuploader_mods_site_server_table_will_work'] = 'Will work';
 $l['pluginuploader_mods_site_server_table_wont_work'] = 'Won\'t work';
-$l['pluginuploader_mods_site_server_info'] = '<strong>Your server:</strong>';
+$l['pluginuploader_mods_site_server_info'] = '<strong>On your server:</strong>';
 $l['pluginuploader_mods_site_server_info_safe_mode'] = 'safe_mode:';
 $l['pluginuploader_mods_site_server_info_open_basedir'] = 'open_basedir:';
 $l['pluginuploader_mods_site_server_info_enabled'] = 'Enabled';
@@ -192,4 +192,10 @@ $l['pluginuploader_mods_site_server_info_php_version'] = 'PHP Version:';
 $l['pluginuploader_mods_site_server_info_will_it_work'] = 'Will it work?';
 $l['pluginuploader_mods_site_server_info_will_it_work_yes'] = '<span style="color: green; font-weight: bold;">Yes</span>';
 $l['pluginuploader_mods_site_server_info_will_it_work_no'] = '<span style="color: red; font-weight: bold;">No</span>';
+$l['pluginuploader_mods_site_server_info_what_next'] = '<strong>What next?</strong>';
+$l['pluginuploader_mods_site_server_info_what_next_disable_safe_mode'] = 'Disable safe_mode';
+$l['pluginuploader_mods_site_server_info_what_next_disable_open_basedir'] = 'Disable open_basedir';
+$l['pluginuploader_mods_site_server_info_what_next_or'] = '<strong>or</strong>';
+$l['pluginuploader_mods_site_server_info_what_next_upgrade_php'] = 'Upgrade to PHP 5.3.4 or higher';
+$l['pluginuploader_mods_site_server_info_what_next_contact_host'] = 'Contact your host to see if either of these options are possible.';
 ?>

@@ -1342,7 +1342,26 @@ elseif($mybb->input['action2'] == 'mods_site_integration')
 	{
 		$open_basedir = $lang->pluginuploader_mods_site_server_info_disabled;
 	}
-	$table->construct_cell($lang->pluginuploader_mods_site_why_it_wont_work.'<br /><br />'.$server_table.'<br />'.$lang->pluginuploader_mods_site_server_info.'<br />'.$lang->pluginuploader_mods_site_server_info_safe_mode.' '.$safe_mode.'<br />'.$lang->pluginuploader_mods_site_server_info_open_basedir.' '.$open_basedir.'<br />'.$lang->pluginuploader_mods_site_server_info_php_version.' '.PHP_VERSION.'<br />'.$lang->pluginuploader_mods_site_server_info_will_it_work.' '.(pluginuploader_can_use_mods_site()?$lang->pluginuploader_mods_site_server_info_will_it_work_yes:$lang->pluginuploader_mods_site_server_info_will_it_work_no));
+	if(pluginuploader_can_use_mods_site())
+	{
+		$will_it_work = $lang->pluginuploader_mods_site_server_info_will_it_work_yes;
+		$what_next = '';
+	}
+	else
+	{
+		$will_it_work = $lang->pluginuploader_mods_site_server_info_will_it_work_no;
+		$what_next = '<br /><br />'.$lang->pluginuploader_mods_site_server_info_what_next.'<br />';
+		if(@ini_get('safe_mode') == 1 || strtolower(@ini_get('safe_mode')) == 'on')
+		{
+			$what_next .= $lang->pluginuploader_mods_site_server_info_what_next_disable_safe_mode.'<br />';
+		}
+		if(strlen(@ini_get('open_basedir')))
+		{
+			$what_next .= $lang->pluginuploader_mods_site_server_info_what_next_disable_open_basedir.'<br />';
+		}
+		$what_next .= $lang->pluginuploader_mods_site_server_info_what_next_or.'<br />'.$lang->pluginuploader_mods_site_server_info_what_next_upgrade_php.'<br /><br />'.$lang->pluginuploader_mods_site_server_info_what_next_contact_host;
+	}
+	$table->construct_cell($lang->pluginuploader_mods_site_why_it_wont_work.'<br /><br />'.$server_table.'<br />'.$lang->pluginuploader_mods_site_server_info.'<br />'.$lang->pluginuploader_mods_site_server_info_safe_mode.' '.$safe_mode.'<br />'.$lang->pluginuploader_mods_site_server_info_open_basedir.' '.$open_basedir.'<br />'.$lang->pluginuploader_mods_site_server_info_php_version.' '.PHP_VERSION.'<br />'.$lang->pluginuploader_mods_site_server_info_will_it_work.' '.$will_it_work.$what_next);
 	$table->construct_row();
 	
 	echo $table->output($lang->pluginuploader_mods_site_title);
