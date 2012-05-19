@@ -884,17 +884,8 @@ elseif($mybb->input['action2'] == "do_install")
 		$fp = @fopen($url, 'rb', false, $scc);
 		$result = @stream_get_contents($fp);
 	}
-	else
-	{
-		$error_message = ' '.$lang->pluginuploader_error_downloading_from_mods_error_ini;
-		if(version_compare(PHP_VERSION, '5.3.4', '<'))
-		{
-			$error_message .= ' '.$lang->pluginuploader_error_downloading_from_mods_error_php_version;
-		}
-		$error_message .= ' '.$lang->pluginuploader_error_downloading_from_mods_contact_host;
-	}
 	
-	if($mods_site_method != 'none' && !empty($result) && @file_put_contents(MYBB_ROOT.'inc/plugins/temp/'.$plugin_name.'.zip', $result))
+	if(!empty($result) && @file_put_contents(MYBB_ROOT.'inc/plugins/temp/'.$plugin_name.'.zip', $result))
 	{
 		update_admin_session('pluginuploader_import_source', 'modssite');
 		
@@ -903,12 +894,7 @@ elseif($mybb->input['action2'] == "do_install")
 	}
 	else
 	{
-		if($mods_site_method != 'none')
-		{
-			$error_message = $lang->pluginuploader_error_downloading_from_mods_unknown_error;
-		}
-		
-		flash_message($lang->sprintf($lang->pluginuploader_error_downloading_from_mods, $plugin_name).$error_message, 'error');
+		flash_message($lang->sprintf($lang->pluginuploader_error_downloading_from_mods, $plugin_name).'<br /><br />'.$lang->pluginuploader_error_downloading_from_mods_unknown_error, 'error');
 		admin_redirect("index.php?module=config-plugins&action=pluginuploader");
 	}
 }
@@ -919,6 +905,19 @@ elseif($mybb->input['action2'] == "install")
 	if($plugin == "plugin-uploader")
 	{
 		flash_message($lang->pluginuploader_error_plugin_pluginuploader, 'error');
+		admin_redirect("index.php?module=config-plugins&action=pluginuploader");
+	}
+	
+	if(!pluginuploader_can_use_mods_site())
+	{
+		$error_message = ' '.$lang->pluginuploader_error_downloading_from_mods_error_ini;
+		if(version_compare(PHP_VERSION, '5.3.4', '<'))
+		{
+			$error_message .= ' '.$lang->pluginuploader_error_downloading_from_mods_error_php_version;
+		}
+		$error_message .= ' '.$lang->pluginuploader_error_downloading_from_mods_contact_host;
+		
+		flash_message($lang->sprintf($lang->pluginuploader_error_downloading_from_mods, $plugin).'<br /><br />'.$error_message, 'error');
 		admin_redirect("index.php?module=config-plugins&action=pluginuploader");
 	}
 	
