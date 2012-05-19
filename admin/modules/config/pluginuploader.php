@@ -1526,8 +1526,8 @@ else
 		
 		$form_container->output_row(
 			$lang->pluginuploader_plugin . " <em>*</em>", '',
-			$lang->pluginuploader_plugin_file.'<br />'.$form->generate_file_upload_box("plugin_file").'<br /><br />'.
-			$lang->pluginuploader_plugin_url.'<br />'.$form->generate_text_box("plugin_url", $plugin_url).
+			'<fieldset><legend>'.$lang->pluginuploader_plugin_file.'</legend>'.$lang->pluginuploader_plugin_file_desc.'<br />'.$form->generate_file_upload_box("plugin_file").'</fieldset>'.
+			'<fieldset><legend>'.$lang->pluginuploader_plugin_url.'</legend>'.$lang->pluginuploader_plugin_url_desc.'<br />'.$form->generate_text_box("plugin_url", $plugin_url).
 				$form->generate_hidden_field('has_site_login', $has_site_login_value, array('id' => 'has_site_login')).
 				' <span id="url_site_needs_login"'.$url_site_needs_login_style.'>'.
 					'<label for="url_site_needs_login_checkbox" style="font-weight: normal;">'.$lang->pluginuploader_from_url_site_needs_login.'</label> '.
@@ -1537,8 +1537,10 @@ else
 					$lang->pluginuploader_from_url_site_login_username.' '.$form->generate_text_box('site_login_username', '', array('class' => 'input_100_wide')).' '.
 					$lang->pluginuploader_from_url_site_login_password.' '.$form->generate_password_box('site_login_password', '', array('class' => 'input_100_wide')).
 					' <small><a href="javascript:void(0)" id="url_site_doesnt_need_login">'.$lang->pluginuploader_from_url_site_doesnt_need_login.'</a></small>'.
-				'</span><br /><br />'.
-			$lang->pluginuploader_plugin_desc_warning
+				'</span>
+			</fieldset>'.
+			$lang->pluginuploader_plugin_desc_warning.'<br /><br />'.
+			'<fieldset><legend>'.$lang->pluginuploader_plugin_mods_site.'</legend>'.$lang->pluginuploader_plugin_mods_site_desc.'</fieldset>'
 		);
 		
 		if(!DISABLE_PLUGINUPLOADER_PASSWORD)
