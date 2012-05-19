@@ -19,7 +19,7 @@
 
 $l['pluginuploader'] = "Plugin Uploader";
 $l['pluginuploader_upload_plugin'] = "Upload Plugin";
-$l['pluginuploader_upload_plugin_desc'] = "Upload a plugin .zip archive or .php file.";
+$l['pluginuploader_upload_plugin_desc'] = "Import a plugin to your forum; upload a .zip or .php file, the URL to an attachment, or import from the MyBB Mods Site";
 $l['pluginuploader_plugin'] = "Plugin";
 $l['pluginuploader_plugin_file'] = "Browse for the plugin to upload. It must be a .zip archive or a single .php plugin file.";
 $l['pluginuploader_plugin_url'] = "Or, enter the URL of a plugin on the MyBB Mods site or the direct URL to a zip/attachment for a plugin.";
