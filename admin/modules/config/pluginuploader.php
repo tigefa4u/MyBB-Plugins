@@ -910,7 +910,7 @@ elseif($mybb->input['action2'] == "install")
 	
 	if(!pluginuploader_can_use_mods_site())
 	{
-		$error_message = ' '.$lang->pluginuploader_error_downloading_from_mods_error_ini;
+		$error_message = $lang->pluginuploader_error_downloading_from_mods_error_ini;
 		if(version_compare(PHP_VERSION, '5.3.4', '<'))
 		{
 			$error_message .= ' '.$lang->pluginuploader_error_downloading_from_mods_error_php_version;
