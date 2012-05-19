@@ -886,7 +886,7 @@ elseif($mybb->input['action2'] == "do_install")
 	}
 	else
 	{
-		$error_message = $lang->pluginuploader_error_downloading_from_mods_error_ini;
+		$error_message = ' '.$lang->pluginuploader_error_downloading_from_mods_error_ini;
 		if(version_compare(PHP_VERSION, '5.3.4', '<'))
 		{
 			$error_message .= ' '.$lang->pluginuploader_error_downloading_from_mods_error_php_version;
