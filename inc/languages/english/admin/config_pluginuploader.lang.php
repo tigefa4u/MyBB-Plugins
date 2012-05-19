@@ -203,4 +203,6 @@ $l['pluginuploader_mods_site_server_info_what_next_disable_open_basedir'] = 'Dis
 $l['pluginuploader_mods_site_server_info_what_next_or'] = '<strong>or</strong>';
 $l['pluginuploader_mods_site_server_info_what_next_upgrade_php'] = 'Upgrade to PHP 5.3.4 or higher';
 $l['pluginuploader_mods_site_server_info_what_next_contact_host'] = 'Contact your host to see if either of these options are possible.';
+$l['pluginuploader_mods_site_external_download_service'] = '<h2>External Download Service</h2>I offer an external download service if you want to import plugins straight from the Mods Site but your server doesn\'t support it. Instead, a request will be made to my own server, with the name of the plugin you\'re trying to install, and my server will download it and send the contents back.<br /><br />As this uses my own server, I ask for a donation of (at least) &pound;2, in return for an API key to use the service. Click the donate button below and donate at least &pound;2, making sure you include your forum URL and your email address in the message box (otherwise the key won\'t work or I won\'t be able to send it to you). When you\'ve received your API key, enter it in the box below.<br /><br /><strong>API Key:</strong><br />';
+$l['pluginuploader_mods_site_external_download_service_api_key_empty'] = 'Please enter an API key';
 ?>

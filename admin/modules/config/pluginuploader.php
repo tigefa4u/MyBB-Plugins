@@ -1302,13 +1302,24 @@ elseif($mybb->input['action2'] == "clear_password")
 }
 elseif($mybb->input['action2'] == 'mods_site_integration')
 {
+	if($mybb->request_method == 'post')
+	{
+		$api_key = $mybb->input['api_key'];
+		if(empty($api_key))
+		{
+			flash_message($lang->pluginuploader_mods_site_external_download_service_api_key_empty, 'error');
+		}
+	}
+	
 	$page->add_breadcrumb_item($lang->pluginuploader_mods_site_title);
 	$page->output_header($lang->pluginuploader);
 	
+	$form = new Form("index.php?module=config-plugins&amp;action=pluginuploader&amp;action2=mods_site_integration", "post");
 	$table = new Table;
 	
 	$table->construct_cell($lang->pluginuploader_mods_site_how_it_works);
 	$table->construct_row();
+	
 	$server_table = '<table border="1" cellspacing="0" cellpadding="0">
 	<tr>
 		<td></td>
@@ -1364,7 +1375,21 @@ elseif($mybb->input['action2'] == 'mods_site_integration')
 	$table->construct_cell($lang->pluginuploader_mods_site_why_it_wont_work.'<br /><br />'.$server_table.'<br />'.$lang->pluginuploader_mods_site_server_info.'<br />'.$lang->pluginuploader_mods_site_server_info_safe_mode.' '.$safe_mode.'<br />'.$lang->pluginuploader_mods_site_server_info_open_basedir.' '.$open_basedir.'<br />'.$lang->pluginuploader_mods_site_server_info_php_version.' '.PHP_VERSION.'<br />'.$lang->pluginuploader_mods_site_server_info_will_it_work.' '.$will_it_work.$what_next);
 	$table->construct_row();
 	
+	if($mybb->input['api_key'])
+	{
+		$api_key = $mybb->input['api_key'];
+	}
+	else
+	{
+		$api_key = $mybb->config['pluginuploader_external_download_service_api_key'];
+	}
+	$table->construct_cell($lang->pluginuploader_mods_site_external_download_service.$form->generate_text_box("api_key", $api_key));
+	$table->construct_row();
+	
 	echo $table->output($lang->pluginuploader_mods_site_title);
+	$buttons[] = $form->generate_submit_button($lang->submit, array("id" => "submit"));
+	$form->output_submit_wrapper($buttons);
+	$form->end();
 	
 	$page->output_footer();
 }
