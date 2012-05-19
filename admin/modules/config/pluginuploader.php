@@ -1035,6 +1035,7 @@ elseif($mybb->input['action2'] == "ftp_details")
 		
 		if(!$has_error)
 		{
+			$pluginuploader->changing_details = true;
 			$pluginuploader->set_ftp_details($mybb->input['ftp_host'], $mybb->input['ftp_user'], $mybb->input['ftp_password']);
 			if(!$pluginuploader->ftp_connect())
 			{

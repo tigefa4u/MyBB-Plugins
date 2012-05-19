@@ -589,6 +589,7 @@ class PluginUploader
 	private $ftp_password;
 	public $using_ssl = false;
 	public $details_storage_location;
+	public $changing_details = false;
 
 	public function __construct()
 	{
@@ -691,31 +692,34 @@ class PluginUploader
 		}
 		else
 		{
-			// now we have to check if the encryption key used to encrypt the FTP details hasn't been changed
-			// if it has, we can't decrypt the details
-			$test_string = '';
-			if($this->details_storage_location == 'cookie')
+			if(!$this->changing_details)
 			{
-				$test_string = $mybb->cookies['mybb_pluginuploader_ftp_test'];
-			}
-			elseif($this->details_storage_location == 'database')
-			{
-				$query = $db->simple_select("pluginuploader", "files AS ftp_test", "name = '_ftp_test'");
-				if($db->num_rows($query) == 1)
+				// now we have to check if the encryption key used to encrypt the FTP details hasn't been changed
+				// if it has, we can't decrypt the details
+				$test_string = '';
+				if($this->details_storage_location == 'cookie')
 				{
-					$test_string = $db->fetch_field($query, "ftp_test");
+					$test_string = $mybb->cookies['mybb_pluginuploader_ftp_test'];
 				}
-			}
-			
-			if($test_string)
-			{
-				if($this->decrypt(base64_decode($test_string)) != 'test')
+				elseif($this->details_storage_location == 'database')
 				{
-					if($return_error)
+					$query = $db->simple_select("pluginuploader", "files AS ftp_test", "name = '_ftp_test'");
+					if($db->num_rows($query) == 1)
 					{
-						return "config_wrong";
+						$test_string = $db->fetch_field($query, "ftp_test");
 					}
-					return false;
+				}
+			
+				if($test_string)
+				{
+					if($this->decrypt(base64_decode($test_string)) != 'test')
+					{
+						if($return_error)
+						{
+							return "config_wrong";
+						}
+						return false;
+					}
 				}
 			}
 		}
