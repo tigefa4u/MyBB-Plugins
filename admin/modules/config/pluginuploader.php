@@ -1546,6 +1546,9 @@ else
 			'<fieldset><legend>'.$lang->pluginuploader_plugin_mods_site.'</legend>'.(pluginuploader_can_use_mods_site()?$lang->pluginuploader_plugin_mods_site_desc:$lang->pluginuploader_plugin_mods_site_unavailable_desc).'</fieldset>'
 		);
 		
+		$form_container->end();
+		$form_container = new FormContainer();
+		
 		if(!DISABLE_PLUGINUPLOADER_PASSWORD)
 		{
 			$password_links = '';
