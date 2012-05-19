@@ -658,7 +658,7 @@ if($mybb->input['action2'] == "do_upload")
 		$form = new Form("index.php?module=config-plugins&action=pluginuploader&amp;action2=do_upload&amp;do=import", "post", "", 1, "", "", "submit = document.getElementById('submit'); submit.style.color = '#CCCCCC'; submit.style.border = '3px double #CCCCCC'; submit.disabled = 'disabled';");
 		$form_container = new FormContainer($lang->pluginuploader_upload_plugin);
 		
-		// does this file already exist??
+		// does this file already exist?
 		if(file_exists(MYBB_ROOT . "inc/plugins/" . $plugin_name . ".php"))
 		{
 			// this plugin already exists, we'll just make sure the user wants to re-import it
@@ -1788,7 +1788,7 @@ function pluginuploader_find_pluginfile($root)
 		{
 			return $php[0];
 		}
-		// two PHP files?? check if one's a plugin file and one's a language file
+		// two PHP files? check if one's a plugin file and one's a language file
 		elseif(count($php) == 2)
 		{
 			foreach($php as $key => $file)
@@ -2007,7 +2007,7 @@ function pluginuploader_move_files($path, $type, $current_files = array(), $impo
 					$ret['errors'][] = "./" . "inc/plugins/" . $php[0];
 				}
 			}
-			// two PHP files?? check if one's a plugin file and one's a language file
+			// two PHP files? check if one's a plugin file and one's a language file
 			elseif(count($php) == 2)
 			{
 				foreach($php as $key => $file)
@@ -2037,7 +2037,7 @@ function pluginuploader_move_files($path, $type, $current_files = array(), $impo
 			// we have other files here that aren't PHP files, try and do something with them
 			if(count($all) > count($php))
 			{
-				// do we have any javascript files??
+				// do we have any javascript files?
 				$js = @$pluginuploader->glob("*.js");
 				if(count($js) > 0)
 				{
@@ -2052,7 +2052,7 @@ function pluginuploader_move_files($path, $type, $current_files = array(), $impo
 					}
 				}
 				
-				// do we have any images??
+				// do we have any images?
 				$images = @$pluginuploader->glob("{*.gif,*.GIF,*.jpg,*.JPG,*.jpeg,*.JPEG,*.png,*.PNG}", GLOB_BRACE);
 				if(count($images) > 0)
 				{
@@ -2079,7 +2079,7 @@ function pluginuploader_load_screenshots($path, $get_files = false)
 	
 	chdir($path);
 	
-	// do we have any images with 'screenshot' in the name?? this is to catch any in the folder we're in now
+	// do we have any images with 'screenshot' in the name? this is to catch any in the folder we're in now
 	$screenshots = @$pluginuploader->glob($path . "/*screenshot*{.gif,.GIF,.jpg,.JPG,.jpeg,.JPEG,.png,.PNG}", GLOB_BRACE);
 	if(!empty($screenshots))
 	{

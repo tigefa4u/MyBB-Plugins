@@ -29,15 +29,15 @@ $l['pluginuploader_plugin_version'] = "Plugin Version";
 $l['pluginuploader_plugin_description'] = "Plugin Description";
 $l['pluginuploader_plugin_screenshots'] = "Plugin Screenshots";
 $l['pluginuploader_plugin_screenshots_desc'] = "Click to enlarge.";
-$l['pluginuploader_install_activate'] = "Install and/or Activate??";
-$l['pluginuploader_install_activate_desc'] = "Do you want to automatically install and/or activate this plugin after it has been uploaded??";
-$l['pluginuploader_activate'] = "Activate plugin??";
-$l['pluginuploader_activate_desc'] = "Do you want to automatically activate this plugin??";
-$l['pluginuploader_deactivate'] = "Deactivate Plugin??";
+$l['pluginuploader_install_activate'] = "Install and/or Activate?";
+$l['pluginuploader_install_activate_desc'] = "Do you want to automatically install and/or activate this plugin after it has been uploaded?";
+$l['pluginuploader_activate'] = "Activate plugin?";
+$l['pluginuploader_activate_desc'] = "Do you want to automatically activate this plugin?";
+$l['pluginuploader_deactivate'] = "Deactivate Plugin?";
 $l['pluginuploader_deactivate_desc'] = "<strong><span style=\"color: red;\">The plugin you're uploading is already activated and running on your forum.</span></strong> In order to continue, it needs to be deactivated.<br /><br /><strong>Note: This could cause some data loss.</strong> Depending on how this plugin is written, deactivating may remove any settings/templates the plugin added, but re-activating will add them back (with their default values/contents). Deactivating may also undo any template edits the plugin made, but re-activating should make the change again. You should not lose any information stored in the database by doing this. You will be able to re-activate the plugin after it has been re-imported.<br /><br />If you choose not to deactivate, you will not be able to continue importing the plugin.<br ><br /><strong><span style=\"color: red;\">NOTE:</span> If you continue, you must follow the process through to the end.</strong> Some of the new files may be moved into your file system before the full import has been completed, and some may be deleted. If you abort the import after the next step, you may experience problems if you reactivate the plugin as it may have newer versions of some files, and some files may be missing. You will, however, be able to reimport the older version to resolve any potential problems.";
-$l['pluginuploader_import_non_php_root_files'] = "Import non PHP root files??";
+$l['pluginuploader_import_non_php_root_files'] = "Import non PHP root files?";
 $l['pluginuploader_import_non_php_root_files_desc'] = "This plugin comes with files in the root folder that are not PHP files. These are probably documentation/example files that are not used by the plugin and won't affect it working, so it is recommended not to import these files. However, if these files are needed for the plugin to work, you can upload this plugin again and set this option to Yes to import them.";
-$l['can_upload_plugins'] = "Can upload plugins??";
+$l['can_upload_plugins'] = "Can upload plugins?";
 
 $l['pluginuploader_error_no_ziparchive_class'] = "Sorry, your host does not have the ability to extract .zip archives.";
 $l['pluginuploader_error_upload'] = "Could not open .zip archive.";
@@ -58,8 +58,8 @@ $l['pluginuploader_plugin_upgrade_warning'] = "If you continue, it will reimport
 $l['pluginuploader_error_move_files'] = "There was an error importing this plugin. The following files could not be moved to their proper locations:<br /><ul>{1}</ul>You can either try importing the plugin again, or uploading these files manually.";
 $l['pluginuploader_error_move_external_files'] = "There was an error importing this plugin. This plugin has extra files, including language files, that may need to be included in order to run the info function. These files could not be moved to their proper locations:<br /><ul>{1}</ul>You can either try importing the plugin again, or uploading these files manually.";
 $l['pluginuploader_error_no_user'] = "<br /><br />One or more of these files already existed on your server, but has an owner of 'nobody'. Please contact your host to resolve this issue before trying to upload this plugin again, as currently the file(s) that already exist on your server may not be able to be replaced with the new copy.";
-$l['pluginuploader_delete_warning'] = "<span style=\"color: red;\"><strong>WARNING</strong></span><br /><br />If you continue, this process will <strong>deactivate</strong> and (if applicable) <strong>uninstall</strong> this plugin, and <strong>delete all files</strong> for it.<br /><br /><strong>It will (try to) completely remove all traces of it from your forum.</strong><br /><br />The following files will be deleted:<br /><ul>{1}</ul>If any of these files are core files, please make sure to upload them again from a fresh download of your version of MyBB.<br /><br />Are you sure you wish to continue??";
-$l['pluginuploader_delete_warning_no_files'] = "<span style=\"color: red;\"><strong>WARNING</strong></span><br /><br />If you continue, this process will <strong>deactivate</strong> and (if applicable) <strong>uninstall</strong> this plugin.<br /><br />As the files for this plugin were not uploaded by the plugin uploader, only the main plugin file can be deleted. Other files for this plugin will be left where they are.<br /><br />If you would like to delete all the files for this plugin, you can import the plugin again via the plugin uploader, and then choose to delete it from the plugin list again.<br /><br />Are you sure you wish to continue??";
+$l['pluginuploader_delete_warning'] = "<span style=\"color: red;\"><strong>WARNING</strong></span><br /><br />If you continue, this process will <strong>deactivate</strong> and (if applicable) <strong>uninstall</strong> this plugin, and <strong>delete all files</strong> for it.<br /><br /><strong>It will (try to) completely remove all traces of it from your forum.</strong><br /><br />The following files will be deleted:<br /><ul>{1}</ul>If any of these files are core files, please make sure to upload them again from a fresh download of your version of MyBB.<br /><br />Are you sure you wish to continue?";
+$l['pluginuploader_delete_warning_no_files'] = "<span style=\"color: red;\"><strong>WARNING</strong></span><br /><br />If you continue, this process will <strong>deactivate</strong> and (if applicable) <strong>uninstall</strong> this plugin.<br /><br />As the files for this plugin were not uploaded by the plugin uploader, only the main plugin file can be deleted. Other files for this plugin will be left where they are.<br /><br />If you would like to delete all the files for this plugin, you can import the plugin again via the plugin uploader, and then choose to delete it from the plugin list again.<br /><br />Are you sure you wish to continue?";
 $l['pluginuploader_delete_invalid_plugin'] = "Could not delete plugin. Invalid plugin specified.";
 $l['pluginuploader_delete_errors'] = "The following files could not be deleted:<br /><ul>{1}</ul>";
 $l['pluginuploader_success'] = "Plugin uploaded successfully. You can now install and/or activate it below.";
@@ -88,7 +88,7 @@ $l['pluginuploader_error_downloading_from_mods_ftp_desc'] = 'Please use the form
 $l['pluginuploader_error_downloading_from_mods_ftp_added_extra'] = '<br /><br />You can now install this plugin.';
 
 $l['pluginuploader_from_url_login_required'] = 'It has been detected that this URL may be an attachment on a MyBB forum, but requires login details to access. Please enter your login details for this forum below. These details will not be stored anywhere.';
-$l['pluginuploader_from_url_site_needs_login'] = 'Will this require login details to access?? (MyBB Powered forums only)';
+$l['pluginuploader_from_url_site_needs_login'] = 'Will this require login details to access? (MyBB Powered forums only)';
 $l['pluginuploader_from_url_site_doesnt_need_login'] = 'This won\'t need login details';
 $l['pluginuploader_from_url_site_login'] = 'Enter both your username and password.';
 $l['pluginuploader_from_url_site_login_username'] = 'Username:';
@@ -118,7 +118,7 @@ $l['pluginuploader_password_clear'] = "<a href=\"index.php?module=config-plugins
 $l['pluginuploader_password_change_clear_or'] = ' or ';
 $l['pluginuploader_password_change_title'] = "Change Plugin Uploader Password";
 $l['pluginuploader_password_cleared'] = "Password cleared successfully.";
-$l['pluginuploader_password_remember'] = "Remember password?? <span class=\"smalltext\">This will mean you won't have to enter the password every time you upload a plugin, when logged in with this account, on this computer, using this browser.</span>";
+$l['pluginuploader_password_remember'] = "Remember password? <span class=\"smalltext\">This will mean you won't have to enter the password every time you upload a plugin, when logged in with this account, on this computer, using this browser.</span>";
 
 $l['pluginuploader_ftp_required'] = "FTP Connection Required";
 $l['pluginuploader_ftp_required_desc'] = "It has been detected that your server may not be able to move the plugin files to their proper locations using standard PHP functions. Instead, the Plugin Uploader may need to connect via FTP to move the files.<br /><br />";
@@ -152,7 +152,7 @@ $l['pluginuploader_ftp_storage_location_missing'] = "Please select where you wou
 $l['pluginuploader_ftp_storage_location_cookie'] = 'Browser Cookie';
 $l['pluginuploader_ftp_storage_location_database'] = 'Database';
 $l['pluginuploader_ftp_cookie_expiry'] = "Cookie Expiry";
-$l['pluginuploader_ftp_cookie_expiry_desc'] = "How long would you like the cookie to be stored for?? The sooner it expires, the more secure it is, but you will have to re-enter the FTP details more often if the cookie expires quickly.";
+$l['pluginuploader_ftp_cookie_expiry_desc'] = "How long would you like the cookie to be stored for? The sooner it expires, the more secure it is, but you will have to re-enter the FTP details more often if the cookie expires quickly.";
 $l['pluginuploader_ftp_cookie_expiry_missing'] = "Please select a cookie expiry time.";
 $l['pluginuploader_ftp_cookie_expiry_close'] = 'When I close my browser';
 $l['pluginuploader_ftp_cookie_expiry_day'] = '1 Day';
