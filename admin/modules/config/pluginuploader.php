@@ -1462,6 +1462,9 @@ else
 		.input_100_wide {
 			width: 100px !important;
 		}
+		.form_row {
+			margin: 10px 0px;
+		}
 		</style>
 		
 		<script type=\"text/javascript\">
