@@ -1342,6 +1342,7 @@ elseif($mybb->input['action2'] == 'mods_site_integration')
 				if($pluginuploader->add_config_api_key($api_key))
 				{
 					flash_message($lang->pluginuploader_mods_site_external_download_api_key_success_saved, 'success');
+					admin_redirect("index.php?module=config-plugins&action=pluginuploader&action2=mods_site_integration");
 				}
 				else
 				{
