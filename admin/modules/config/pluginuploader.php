@@ -1419,17 +1419,20 @@ elseif($mybb->input['action2'] == 'mods_site_integration')
 	$table->construct_cell($lang->pluginuploader_mods_site_why_it_wont_work.'<br /><br />'.$server_table.'<br />'.$lang->pluginuploader_mods_site_server_info.'<br />'.$lang->pluginuploader_mods_site_server_info_safe_mode.' '.$safe_mode.'<br />'.$lang->pluginuploader_mods_site_server_info_open_basedir.' '.$open_basedir.'<br />'.$lang->pluginuploader_mods_site_server_info_php_version.' '.PHP_VERSION.'<br />'.$lang->pluginuploader_mods_site_server_info_will_it_work.' '.$will_it_work.$what_next);
 	$table->construct_row();
 	
-	if($mybb->input['api_key'])
+	if(!pluginuploader_can_use_mods_site())
 	{
-		$api_key = $mybb->input['api_key'];
+		if($mybb->input['api_key'])
+		{
+			$api_key = $mybb->input['api_key'];
+		}
+		else
+		{
+			$api_key = $mybb->config['pluginuploader_external_download_api_key'];
+		}
+		$table->construct_cell($lang->pluginuploader_mods_site_external_download.'<br /><br />'.
+		'<a href="https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=XKSCRPTRJ7KJE" target="_blank"><img src="https://www.paypalobjects.com/en_GB/i/btn/btn_donate_LG.gif" alt="Donate" title="Donate" /></a><br /><br />'.$lang->pluginuploader_mods_site_external_download_api_key.'<br />'.$form->generate_text_box("api_key", $api_key).'<br />'.$lang->pluginuploader_mods_site_external_download_api_key_rate_limit);
+		$table->construct_row();
 	}
-	else
-	{
-		$api_key = $mybb->config['pluginuploader_external_download_api_key'];
-	}
-	$table->construct_cell($lang->pluginuploader_mods_site_external_download.'<br /><br />'.
-	'<a href="https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=XKSCRPTRJ7KJE" target="_blank"><img src="https://www.paypalobjects.com/en_GB/i/btn/btn_donate_LG.gif" alt="Donate" title="Donate" /></a><br /><br />'.$lang->pluginuploader_mods_site_external_download_api_key.'<br />'.$form->generate_text_box("api_key", $api_key).'<br />'.$lang->pluginuploader_mods_site_external_download_api_key_rate_limit);
-	$table->construct_row();
 	
 	echo $table->output($lang->pluginuploader_mods_site_title);
 	$buttons[] = $form->generate_submit_button($lang->submit, array("id" => "submit"));
