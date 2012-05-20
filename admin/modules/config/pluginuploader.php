@@ -888,6 +888,26 @@ elseif($mybb->input['action2'] == "do_install")
 	elseif($mods_site_method == 'api')
 	{
 		$result = fetch_remote_file(API_URL.'?action=import', array('plugin_name' => urlencode($plugin_name), 'forum_url' => $mybb->settings['bburl'], 'api_key' => $mybb->config['pluginuploader_external_download_api_key']));
+		$has_error = false;
+		if($result == 'invalid_api_key')
+		{
+			flash_message($lang->pluginuploader_mods_site_external_download_error_invalid_api_key, 'error');
+			$has_error = true;
+		}
+		elseif($result == 'rate_limit')
+		{
+			flash_message($lang->pluginuploader_mods_site_external_download_error_rate_limit, 'error');
+			$has_error = true;
+		}
+		elseif($result == 'unknown_error')
+		{
+			flash_message($lang->pluginuploader_mods_site_external_download_error_unknown_error, 'error');
+			$has_error = true;
+		}
+		if($has_error)
+		{
+			admin_redirect("index.php?module=config-plugins&action=pluginuploader");
+		}
 	}
 	
 	if(!empty($result) && @file_put_contents(MYBB_ROOT.'inc/plugins/temp/'.$plugin_name.'.zip', $result))

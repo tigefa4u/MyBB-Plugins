@@ -209,4 +209,7 @@ $l['pluginuploader_mods_site_external_download_api_key_empty'] = 'Please enter a
 $l['pluginuploader_mods_site_external_download_api_key_incorrect'] = 'API key is incorrect, please try again';
 $l['pluginuploader_mods_site_external_download_api_key_success_saved'] = 'API key saved successfully';
 $l['pluginuploader_mods_site_external_download_api_key_success_unsaved'] = 'Your API key is correct, however it could not be written to your config file. Either CHMOD ./inc/config.php to 666 and submit your key again, or add the following code to ./inc/config.php, before ?> at the end:';
+$l['pluginuploader_mods_site_external_download_error_invalid_api_key'] = 'Your API key is invalid. <a href="index.php?module=config-plugins&action=pluginuploader&action2=mods_site_integration">Re-enter it here</a>.';
+$l['pluginuploader_mods_site_external_download_error_rate_limit'] = 'Requests are limited to 10 an hour. Please try again soon.';
+$l['pluginuploader_mods_site_external_download_error_unknown_error'] = 'There was an unknown error. Please try again soon.';
 ?>
