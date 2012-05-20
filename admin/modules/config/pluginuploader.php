@@ -1419,7 +1419,7 @@ elseif($mybb->input['action2'] == 'mods_site_integration')
 	$table->construct_cell($lang->pluginuploader_mods_site_why_it_wont_work.'<br /><br />'.$server_table.'<br />'.$lang->pluginuploader_mods_site_server_info.'<br />'.$lang->pluginuploader_mods_site_server_info_safe_mode.' '.$safe_mode.'<br />'.$lang->pluginuploader_mods_site_server_info_open_basedir.' '.$open_basedir.'<br />'.$lang->pluginuploader_mods_site_server_info_php_version.' '.PHP_VERSION.'<br />'.$lang->pluginuploader_mods_site_server_info_will_it_work.' '.$will_it_work.$what_next);
 	$table->construct_row();
 	
-	if(!pluginuploader_can_use_mods_site())
+	if(!pluginuploader_can_use_mods_site() || pluginuploader_can_use_mods_site(true) == 'api')
 	{
 		if($mybb->input['api_key'])
 		{
