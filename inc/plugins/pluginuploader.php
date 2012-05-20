@@ -531,37 +531,10 @@ function pluginuploader_admin_config_plugins_browse_plugins_plugin(&$table)
 
 function pluginuploader_can_use_mods_site($return_method = false)
 {
-	// cURL won't allow followlocation if either of these are set
-	if(@ini_get('safe_mode') == 1 || strtolower(@ini_get('safe_mode')) == 'on' || strlen(@ini_get('open_basedir')))
-	{
-		// if cURL won't work, opening a HTTP context stream will, but only if you're on PHP 5.3.4 or higher
-		// this has followlocation set to true by default, and it doesn't care about safe_mode/open_basedir, but is only available from PHP 5.3.4 and higher
-		// http://uk.php.net/manual/en/context.http.php
-		if(version_compare(PHP_VERSION, '5.3.4', '>='))
-		{
-			if($return_method)
-			{
-				return 'stream';
-			}
-			else
-			{
-				return true;
-			}
-		}
-		else
-		{
-			if($return_method)
-			{
-				return 'none';
-			}
-			else
-			{
-				return false;
-			}
-		}
-	}
-	// cURL will work
-	else
+	global $mybb;
+	
+	// cURL will only allow followlocation if neither of these are set
+	if(!(@ini_get('safe_mode') == 1 || strtolower(@ini_get('safe_mode')) == 'on' || strlen(@ini_get('open_basedir'))))
 	{
 		if($return_method)
 		{
@@ -570,6 +543,43 @@ function pluginuploader_can_use_mods_site($return_method = false)
 		else
 		{
 			return true;
+		}
+		
+	}
+	// if cURL won't work, opening a HTTP context stream will, but only if you're on PHP 5.3.4 or higher
+	// this has followlocation set to true by default, and it doesn't care about safe_mode/open_basedir, but is only available from PHP 5.3.4 and higher
+	// http://uk.php.net/manual/en/context.http.php
+	elseif(version_compare(PHP_VERSION, '5.3.4', '>='))
+	{
+		if($return_method)
+		{
+			return 'stream';
+		}
+		else
+		{
+			return true;
+		}
+	}
+	elseif(!empty($mybb->config['pluginuploader_external_download_api_key']))
+	{
+		if($return_method)
+		{
+			return 'api';
+		}
+		else
+		{
+			return true;
+		}
+	}
+	else
+	{
+		if($return_method)
+		{
+			return 'none';
+		}
+		else
+		{
+			return false;
 		}
 	}
 }
