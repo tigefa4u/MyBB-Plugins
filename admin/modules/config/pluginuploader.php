@@ -1381,6 +1381,7 @@ elseif($mybb->input['action2'] == 'mods_site_integration')
 		<td><span style="color: green; font-weight: bold;">'.$lang->pluginuploader_mods_site_server_table_will_work.'</span></td>
 	</tr>
 </table>';
+
 	if(@ini_get('safe_mode') == 1 || strtolower(@ini_get('safe_mode')) == 'on')
 	{
 		$safe_mode = $lang->pluginuploader_mods_site_server_info_enabled;
@@ -1397,14 +1398,27 @@ elseif($mybb->input['action2'] == 'mods_site_integration')
 	{
 		$open_basedir = $lang->pluginuploader_mods_site_server_info_disabled;
 	}
+	if(pluginuploader_can_use_mods_site(true) == 'api')
+	{
+		$external_download_text = '<br />'.$lang->pluginuploader_mods_site_server_info_external_download.' '.$lang->pluginuploader_mods_site_server_info_yes;
+	}
+	elseif(!pluginuploader_can_use_mods_site())
+	{
+		$external_download_text = '<br />'.$lang->pluginuploader_mods_site_server_info_external_download.' '.$lang->pluginuploader_mods_site_server_info_no;
+	}
+	else
+	{
+		$external_download_text = '';
+	}
+	
 	if(pluginuploader_can_use_mods_site())
 	{
-		$will_it_work = $lang->pluginuploader_mods_site_server_info_will_it_work_yes;
+		$will_it_work = '<span style="color: green; font-weight: bold;">'.$lang->pluginuploader_mods_site_server_info_yes.'</span>';
 		$what_next = '';
 	}
 	else
 	{
-		$will_it_work = $lang->pluginuploader_mods_site_server_info_will_it_work_no;
+		$will_it_work = '<span style="color: red; font-weight: bold;">'.$lang->pluginuploader_mods_site_server_info_no.'</span>';
 		$what_next = '<br /><br />'.$lang->pluginuploader_mods_site_server_info_what_next.'<br />';
 		if(@ini_get('safe_mode') == 1 || strtolower(@ini_get('safe_mode')) == 'on')
 		{
@@ -1414,9 +1428,9 @@ elseif($mybb->input['action2'] == 'mods_site_integration')
 		{
 			$what_next .= $lang->pluginuploader_mods_site_server_info_what_next_disable_open_basedir.'<br />';
 		}
-		$what_next .= $lang->pluginuploader_mods_site_server_info_what_next_or.'<br />'.$lang->pluginuploader_mods_site_server_info_what_next_upgrade_php.'<br /><br />'.$lang->pluginuploader_mods_site_server_info_what_next_contact_host;
+		$what_next .= $lang->pluginuploader_mods_site_server_info_what_next_or.'<br />'.$lang->pluginuploader_mods_site_server_info_what_next_upgrade_php.'<br /><br />'.$lang->pluginuploader_mods_site_server_info_what_next_contact_host.'<br /><br />'.$lang->pluginuploader_mods_site_server_info_what_next_external_download;
 	}
-	$table->construct_cell($lang->pluginuploader_mods_site_why_it_wont_work.'<br /><br />'.$server_table.'<br />'.$lang->pluginuploader_mods_site_server_info.'<br />'.$lang->pluginuploader_mods_site_server_info_safe_mode.' '.$safe_mode.'<br />'.$lang->pluginuploader_mods_site_server_info_open_basedir.' '.$open_basedir.'<br />'.$lang->pluginuploader_mods_site_server_info_php_version.' '.PHP_VERSION.'<br />'.$lang->pluginuploader_mods_site_server_info_will_it_work.' '.$will_it_work.$what_next);
+	$table->construct_cell($lang->pluginuploader_mods_site_why_it_wont_work.'<br /><br />'.$server_table.'<br />'.$lang->pluginuploader_mods_site_server_info.'<br />'.$lang->pluginuploader_mods_site_server_info_safe_mode.' '.$safe_mode.'<br />'.$lang->pluginuploader_mods_site_server_info_open_basedir.' '.$open_basedir.'<br />'.$lang->pluginuploader_mods_site_server_info_php_version.' '.PHP_VERSION.$external_download_text.'<br />'.$lang->pluginuploader_mods_site_server_info_will_it_work.' '.$will_it_work.$what_next);
 	$table->construct_row();
 	
 	if(!pluginuploader_can_use_mods_site() || pluginuploader_can_use_mods_site(true) == 'api')
