@@ -1427,7 +1427,8 @@ elseif($mybb->input['action2'] == 'mods_site_integration')
 	{
 		$api_key = $mybb->config['pluginuploader_external_download_api_key'];
 	}
-	$table->construct_cell($lang->pluginuploader_mods_site_external_download.$form->generate_text_box("api_key", $api_key).'<br />'.$lang->pluginuploader_mods_site_external_download_api_key_rate_limit);
+	$table->construct_cell($lang->pluginuploader_mods_site_external_download.'<br /><br />'.
+	'<a href="https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=XKSCRPTRJ7KJE" target="_blank"><img src="https://www.paypalobjects.com/en_GB/i/btn/btn_donate_LG.gif" alt="Donate" title="Donate" /></a><br /><br />'.$lang->pluginuploader_mods_site_external_download_api_key.'<br />'.$form->generate_text_box("api_key", $api_key).'<br />'.$lang->pluginuploader_mods_site_external_download_api_key_rate_limit);
 	$table->construct_row();
 	
 	echo $table->output($lang->pluginuploader_mods_site_title);
@@ -1578,6 +1579,8 @@ else
 			});
 		});
 		</script>";
+		
+		echo '<a href="https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=XKSCRPTRJ7KJE" target="_blank" style="position: absolute; margin-top: 45px; right: 25px;"><img src="https://www.paypalobjects.com/en_GB/i/btn/btn_donate_LG.gif" alt="Donate" title="Donate" /></a>';
 		
 		$form = new Form("index.php?module=config-plugins&amp;action=pluginuploader&amp;action2=do_upload", "post", "", 1, "", "", "submit = document.getElementById('submit'); submit.style.color = '#CCCCCC'; submit.style.border = '3px double #CCCCCC'; submit.disabled = 'disabled';");
 		$form_container = new FormContainer($lang->pluginuploader_upload_plugin);
