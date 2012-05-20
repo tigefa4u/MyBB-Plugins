@@ -885,6 +885,10 @@ elseif($mybb->input['action2'] == "do_install")
 		$fp = @fopen($url, 'rb', false, $scc);
 		$result = @stream_get_contents($fp);
 	}
+	elseif($mods_site_method == 'api')
+	{
+		$result = fetch_remote_file(API_URL.'?action=import', array('plugin_name' => urlencode($plugin_name), 'forum_url' => $mybb->settings['bburl'], 'api_key' => $mybb->config['pluginuploader_external_download_api_key']));
+	}
 	
 	if(!empty($result) && @file_put_contents(MYBB_ROOT.'inc/plugins/temp/'.$plugin_name.'.zip', $result))
 	{
