@@ -1119,7 +1119,12 @@ class PluginUploader
 		$config_lines = explode("\n", file_get_contents(MYBB_ROOT.'inc/config.php'));
 		foreach($config_lines as &$line)
 		{
-			if($line == '?>')
+			if(strpos($line, 'pluginuploader_ftp_key') !== false)
+			{
+				$line = '$config[\'pluginuploader_ftp_key\'] = \''.$ftp_key.'\';';
+				break;
+			}
+			elseif($line == '?>')
 			{
 				$line = '';
 				$config_lines[] = '$config[\'pluginuploader_ftp_key\'] = \''.$ftp_key.'\';';
@@ -1129,6 +1134,42 @@ class PluginUploader
 		if(file_put_contents(MYBB_ROOT.'inc/config.php', implode("\n", $config_lines)))
 		{
 			$mybb->config['pluginuploader_ftp_key'] = $ftp_key;
+			return true;
+		}
+		
+		return false;
+	}
+	
+	/**
+	 * Tries to add the FTP key to config.php automatically
+	**/
+	public function add_config_api_key($api_key)
+	{
+		global $mybb;
+		
+		if(!is_writable(MYBB_ROOT.'inc/config.php'))
+		{
+			return false;
+		}
+		
+		$config_lines = explode("\n", file_get_contents(MYBB_ROOT.'inc/config.php'));
+		foreach($config_lines as &$line)
+		{
+			if(strpos($line, 'pluginuploader_external_download_api_key') !== false)
+			{
+				$line = '$config[\'pluginuploader_external_download_api_key\'] = \''.$api_key.'\';';
+				break;
+			}
+			elseif($line == '?>')
+			{
+				$line = '';
+				$config_lines[] = '$config[\'pluginuploader_external_download_api_key\'] = \''.$api_key.'\';';
+				$config_lines[] = '?>';
+			}
+		}
+		if(file_put_contents(MYBB_ROOT.'inc/config.php', implode("\n", $config_lines)))
+		{
+			$mybb->config['pluginuploader_external_download_api_key'] = $api_key;
 			return true;
 		}
 		

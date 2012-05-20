@@ -33,6 +33,7 @@ if(!defined("IN_MYBB"))
  * The password is there to try and offer you some degree of protection, if you choose to disable it, on your head be it.
 **/
 define("DISABLE_PLUGINUPLOADER_PASSWORD", false);
+define('API_URL', 'http://mattrogowski.co.uk/mybb/pluginuploader.php');
 
 global $pluginuploader, $admin_session;
 
@@ -1307,7 +1308,26 @@ elseif($mybb->input['action2'] == 'mods_site_integration')
 		$api_key = $mybb->input['api_key'];
 		if(empty($api_key))
 		{
-			flash_message($lang->pluginuploader_mods_site_external_download_service_api_key_empty, 'error');
+			flash_message($lang->pluginuploader_mods_site_external_download_api_key_empty, 'error');
+		}
+		else
+		{
+			$api_key_check = fetch_remote_file(API_URL.'?action=api_key', array('forum_url' => $mybb->settings['bburl'], 'api_key' => $api_key));
+			if($api_key_check == '1')
+			{
+				if($pluginuploader->add_config_api_key($api_key))
+				{
+					flash_message($lang->pluginuploader_mods_site_external_download_api_key_success_saved, 'success');
+				}
+				else
+				{
+					flash_message($lang->pluginuploader_mods_site_external_download_api_key_success_unsaved."<pre style=\"margin: 0;\">".str_replace(array("&lt;?php&nbsp;", "?&gt;"), "", highlight_string("<?php \$config['pluginuploader_external_download_api_key'] = '{$api_key}'; ?>", true))."</pre>", 'error');
+				}
+			}
+			else
+			{
+				flash_message($lang->pluginuploader_mods_site_external_download_api_key_incorrect, 'error');
+			}
 		}
 	}
 	
@@ -1381,9 +1401,9 @@ elseif($mybb->input['action2'] == 'mods_site_integration')
 	}
 	else
 	{
-		$api_key = $mybb->config['pluginuploader_external_download_service_api_key'];
+		$api_key = $mybb->config['pluginuploader_external_download_api_key'];
 	}
-	$table->construct_cell($lang->pluginuploader_mods_site_external_download_service.$form->generate_text_box("api_key", $api_key));
+	$table->construct_cell($lang->pluginuploader_mods_site_external_download.$form->generate_text_box("api_key", $api_key).'<br />'.$lang->pluginuploader_mods_site_external_download_api_key_rate_limit);
 	$table->construct_row();
 	
 	echo $table->output($lang->pluginuploader_mods_site_title);
@@ -2270,6 +2290,6 @@ function pluginuploader_send_usage_stats($plugin_codename = '', $import_source =
 	$stats['import_source'] = $import_source;
 	$stats['can_use_mods_site'] = pluginuploader_can_use_mods_site(true);
 	
-	fetch_remote_file('http://mattrogowski.co.uk/mybb/pluginuploader.php', $stats);
+	fetch_remote_file(API_URL.'?action=stats', $stats);
 }
 ?>
