@@ -529,58 +529,15 @@ function pluginuploader_admin_config_plugins_browse_plugins_plugin(&$table)
 	}
 }
 
-function pluginuploader_can_use_mods_site($return_method = false)
+function pluginuploader_can_use_mods_site()
 {
-	global $mybb;
-	
-	// cURL will only allow followlocation if neither of these are set
-	if(!(@ini_get('safe_mode') == 1 || strtolower(@ini_get('safe_mode')) == 'on' || strlen(@ini_get('open_basedir'))))
+	if(function_exists('curl_init'))
 	{
-		if($return_method)
-		{
-			return 'cURL';
-		}
-		else
-		{
-			return true;
-		}
-		
-	}
-	// if cURL won't work, opening a HTTP context stream will, but only if you're on PHP 5.3.4 or higher
-	// this has followlocation set to true by default, and it doesn't care about safe_mode/open_basedir, but is only available from PHP 5.3.4 and higher
-	// http://uk.php.net/manual/en/context.http.php
-	elseif(version_compare(PHP_VERSION, '5.3.4', '>='))
-	{
-		if($return_method)
-		{
-			return 'stream';
-		}
-		else
-		{
-			return true;
-		}
-	}
-	elseif(!empty($mybb->config['pluginuploader_external_download_api_key']))
-	{
-		if($return_method)
-		{
-			return 'api';
-		}
-		else
-		{
-			return true;
-		}
+		return true;
 	}
 	else
 	{
-		if($return_method)
-		{
-			return 'none';
-		}
-		else
-		{
-			return false;
-		}
+		return false;
 	}
 }
 
@@ -1144,42 +1101,6 @@ class PluginUploader
 		if(file_put_contents(MYBB_ROOT.'inc/config.php', implode("\n", $config_lines)))
 		{
 			$mybb->config['pluginuploader_ftp_key'] = $ftp_key;
-			return true;
-		}
-		
-		return false;
-	}
-	
-	/**
-	 * Tries to add the FTP key to config.php automatically
-	**/
-	public function add_config_api_key($api_key)
-	{
-		global $mybb;
-		
-		if(!is_writable(MYBB_ROOT.'inc/config.php'))
-		{
-			return false;
-		}
-		
-		$config_lines = explode("\n", file_get_contents(MYBB_ROOT.'inc/config.php'));
-		foreach($config_lines as &$line)
-		{
-			if(strpos($line, 'pluginuploader_external_download_api_key') !== false)
-			{
-				$line = '$config[\'pluginuploader_external_download_api_key\'] = \''.$api_key.'\';';
-				break;
-			}
-			elseif($line == '?>')
-			{
-				$line = '';
-				$config_lines[] = '$config[\'pluginuploader_external_download_api_key\'] = \''.$api_key.'\';';
-				$config_lines[] = '?>';
-			}
-		}
-		if(file_put_contents(MYBB_ROOT.'inc/config.php', implode("\n", $config_lines)))
-		{
-			$mybb->config['pluginuploader_external_download_api_key'] = $api_key;
 			return true;
 		}
 		

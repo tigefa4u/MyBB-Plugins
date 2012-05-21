@@ -33,7 +33,6 @@ if(!defined("IN_MYBB"))
  * The password is there to try and offer you some degree of protection, if you choose to disable it, on your head be it.
 **/
 define("DISABLE_PLUGINUPLOADER_PASSWORD", false);
-define('API_URL', 'http://mattrogowski.co.uk/mybb/pluginuploader.php');
 
 global $pluginuploader, $admin_session;
 
@@ -855,58 +854,30 @@ elseif($mybb->input['action2'] == "do_install")
 	}
 	rtrim($fields_string, '&');
 	
-	// we need to try to do this because apparently CURLOPT_FOLLOWLOCATION can't be set if either of these are enabled
-	@ini_set('safe_mode', 0);
-	@ini_set('open_basedir', '');
-	
-	$mods_site_method = pluginuploader_can_use_mods_site(true);
-	if($mods_site_method == 'cURL')
+	$result = '';
+	if(pluginuploader_can_use_mods_site())
 	{
 		$ch = curl_init();
 		curl_setopt($ch,CURLOPT_URL,$url);
 		curl_setopt($ch,CURLOPT_POST,count($fields));
 		curl_setopt($ch,CURLOPT_POSTFIELDS,$fields_string);
 		curl_setopt($ch,CURLOPT_RETURNTRANSFER,true);
-		// thanks to Booher and Tim B for this next line!!
-		// errors are suppressed here as if safe_mode or open_basedir are enabled, you'll get an error
-		@curl_setopt($ch,CURLOPT_FOLLOWLOCATION,true);
+		curl_setopt($ch,CURLOPT_HEADER,true);
 		$result = curl_exec($ch);
+		$result = explode("\n", $result);
+		foreach($result as $header)
+		{
+			if(substr($header, 0, 9) == 'Location:')
+			{
+				$zip_name = trim(substr($header, 9));
+				break;
+			}
+		}
 		curl_close($ch);
-	}
-	elseif($mods_site_method == 'stream')
-	{
-		$params = array(
-			'http' => array(
-				'method' => 'POST',
-				'content' => $fields_string
-			)
-		);
-		$scc = @stream_context_create($params);
-		$fp = @fopen($url, 'rb', false, $scc);
-		$result = @stream_get_contents($fp);
-	}
-	elseif($mods_site_method == 'api')
-	{
-		$result = fetch_remote_file(API_URL.'?action=import', array('plugin_name' => urlencode($plugin_name), 'forum_url' => $mybb->settings['bburl'], 'api_key' => $mybb->config['pluginuploader_external_download_api_key']));
-		$has_error = false;
-		if($result == 'invalid_api_key')
+		$result = '';
+		if(!empty($zip_name))
 		{
-			flash_message($lang->pluginuploader_mods_site_external_download_error_invalid_api_key, 'error');
-			$has_error = true;
-		}
-		elseif($result == 'rate_limit')
-		{
-			flash_message($lang->pluginuploader_mods_site_external_download_error_rate_limit, 'error');
-			$has_error = true;
-		}
-		elseif($result == 'unknown_error')
-		{
-			flash_message($lang->pluginuploader_mods_site_external_download_error_unknown_error, 'error');
-			$has_error = true;
-		}
-		if($has_error)
-		{
-			admin_redirect("index.php?module=config-plugins&action=pluginuploader");
+			$result = fetch_remote_file('http://mods.mybb.com/'.$zip_name);
 		}
 	}
 	
@@ -935,13 +906,6 @@ elseif($mybb->input['action2'] == "install")
 	
 	if(!pluginuploader_can_use_mods_site())
 	{
-		$error_message = $lang->pluginuploader_error_downloading_from_mods_error_ini;
-		if(version_compare(PHP_VERSION, '5.3.4', '<'))
-		{
-			$error_message .= ' '.$lang->pluginuploader_error_downloading_from_mods_error_php_version;
-		}
-		$error_message .= ' '.$lang->pluginuploader_error_downloading_from_mods_contact_host;
-		
 		flash_message($lang->sprintf($lang->pluginuploader_error_downloading_from_mods, $plugin).'<br /><br />'.$error_message, 'error');
 		admin_redirect("index.php?module=config-plugins&action=pluginuploader");
 	}
@@ -1327,132 +1291,18 @@ elseif($mybb->input['action2'] == "clear_password")
 }
 elseif($mybb->input['action2'] == 'mods_site_integration')
 {
-	if($mybb->request_method == 'post')
-	{
-		$api_key = $mybb->input['api_key'];
-		if(empty($api_key))
-		{
-			flash_message($lang->pluginuploader_mods_site_external_download_api_key_empty, 'error');
-		}
-		else
-		{
-			$api_key_check = fetch_remote_file(API_URL.'?action=api_key', array('forum_url' => $mybb->settings['bburl'], 'api_key' => $api_key));
-			if($api_key_check == '1')
-			{
-				if($pluginuploader->add_config_api_key($api_key))
-				{
-					flash_message($lang->pluginuploader_mods_site_external_download_api_key_success_saved, 'success');
-					admin_redirect("index.php?module=config-plugins&action=pluginuploader&action2=mods_site_integration");
-				}
-				else
-				{
-					flash_message($lang->pluginuploader_mods_site_external_download_api_key_success_unsaved."<pre style=\"margin: 0;\">".str_replace(array("&lt;?php&nbsp;", "?&gt;"), "", highlight_string("<?php \$config['pluginuploader_external_download_api_key'] = '{$api_key}'; ?>", true))."</pre>", 'error');
-				}
-			}
-			else
-			{
-				flash_message($lang->pluginuploader_mods_site_external_download_api_key_incorrect, 'error');
-			}
-		}
-	}
-	
 	$page->add_breadcrumb_item($lang->pluginuploader_mods_site_title);
 	$page->output_header($lang->pluginuploader);
 	
-	$form = new Form("index.php?module=config-plugins&amp;action=pluginuploader&amp;action2=mods_site_integration", "post");
 	$table = new Table;
 	
 	$table->construct_cell($lang->pluginuploader_mods_site_how_it_works);
 	$table->construct_row();
 	
-	$server_table = '<table border="1" cellspacing="0" cellpadding="0">
-	<tr>
-		<td></td>
-		<td>'.$lang->pluginuploader_mods_site_server_table_php_534_lower.'</td>
-		<td>'.$lang->pluginuploader_mods_site_server_table_php_534_higher.'</td>
-	</tr>
-	<tr>
-		<td>'.$lang->pluginuploader_mods_site_server_table_ini_on.'</td>
-		<td><span style="color: red; font-weight: bold;">'.$lang->pluginuploader_mods_site_server_table_wont_work.'</span></td>
-		<td><span style="color: green; font-weight: bold;">'.$lang->pluginuploader_mods_site_server_table_will_work.'</span></td>
-	</tr>
-	<tr>
-		<td>'.$lang->pluginuploader_mods_site_server_table_ini_off.'</td>
-		<td><span style="color: green; font-weight: bold;">'.$lang->pluginuploader_mods_site_server_table_will_work.'</span></td>
-		<td><span style="color: green; font-weight: bold;">'.$lang->pluginuploader_mods_site_server_table_will_work.'</span></td>
-	</tr>
-</table>';
-
-	if(@ini_get('safe_mode') == 1 || strtolower(@ini_get('safe_mode')) == 'on')
-	{
-		$safe_mode = $lang->pluginuploader_mods_site_server_info_enabled;
-	}
-	else
-	{
-		$safe_mode = $lang->pluginuploader_mods_site_server_info_disabled;
-	}
-	if(strlen(@ini_get('open_basedir')))
-	{
-		$open_basedir = $lang->pluginuploader_mods_site_server_info_enabled;
-	}
-	else
-	{
-		$open_basedir = $lang->pluginuploader_mods_site_server_info_disabled;
-	}
-	if(pluginuploader_can_use_mods_site(true) == 'api')
-	{
-		$external_download_text = '<br />'.$lang->pluginuploader_mods_site_server_info_external_download.' '.$lang->pluginuploader_mods_site_server_info_yes;
-	}
-	elseif(!pluginuploader_can_use_mods_site())
-	{
-		$external_download_text = '<br />'.$lang->pluginuploader_mods_site_server_info_external_download.' '.$lang->pluginuploader_mods_site_server_info_no;
-	}
-	else
-	{
-		$external_download_text = '';
-	}
-	
-	if(pluginuploader_can_use_mods_site())
-	{
-		$will_it_work = '<span style="color: green; font-weight: bold;">'.$lang->pluginuploader_mods_site_server_info_yes.'</span>';
-		$what_next = '';
-	}
-	else
-	{
-		$will_it_work = '<span style="color: red; font-weight: bold;">'.$lang->pluginuploader_mods_site_server_info_no.'</span>';
-		$what_next = '<br /><br />'.$lang->pluginuploader_mods_site_server_info_what_next.'<br />';
-		if(@ini_get('safe_mode') == 1 || strtolower(@ini_get('safe_mode')) == 'on')
-		{
-			$what_next .= $lang->pluginuploader_mods_site_server_info_what_next_disable_safe_mode.'<br />';
-		}
-		if(strlen(@ini_get('open_basedir')))
-		{
-			$what_next .= $lang->pluginuploader_mods_site_server_info_what_next_disable_open_basedir.'<br />';
-		}
-		$what_next .= $lang->pluginuploader_mods_site_server_info_what_next_or.'<br />'.$lang->pluginuploader_mods_site_server_info_what_next_upgrade_php.'<br /><br />'.$lang->pluginuploader_mods_site_server_info_what_next_contact_host.'<br /><br />'.$lang->pluginuploader_mods_site_server_info_what_next_external_download;
-	}
-	$table->construct_cell($lang->pluginuploader_mods_site_why_it_wont_work.'<br /><br />'.$server_table.'<br />'.$lang->pluginuploader_mods_site_server_info.'<br />'.$lang->pluginuploader_mods_site_server_info_safe_mode.' '.$safe_mode.'<br />'.$lang->pluginuploader_mods_site_server_info_open_basedir.' '.$open_basedir.'<br />'.$lang->pluginuploader_mods_site_server_info_php_version.' '.PHP_VERSION.$external_download_text.'<br />'.$lang->pluginuploader_mods_site_server_info_will_it_work.' '.$will_it_work.$what_next);
+	$table->construct_cell($lang->pluginuploader_mods_site_why_it_wont_work);
 	$table->construct_row();
 	
-	if(!pluginuploader_can_use_mods_site() || pluginuploader_can_use_mods_site(true) == 'api')
-	{
-		if($mybb->input['api_key'])
-		{
-			$api_key = $mybb->input['api_key'];
-		}
-		else
-		{
-			$api_key = $mybb->config['pluginuploader_external_download_api_key'];
-		}
-		$table->construct_cell($lang->pluginuploader_mods_site_external_download.'<br /><br />'.
-		'<a href="https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=XKSCRPTRJ7KJE" target="_blank"><img src="https://www.paypalobjects.com/en_GB/i/btn/btn_donate_LG.gif" alt="Donate" title="Donate" /></a><br /><br />'.$lang->pluginuploader_mods_site_external_download_api_key.'<br />'.$form->generate_text_box("api_key", $api_key).'<br />'.$lang->pluginuploader_mods_site_external_download_api_key_rate_limit);
-		$table->construct_row();
-	}
-	
 	echo $table->output($lang->pluginuploader_mods_site_title);
-	$buttons[] = $form->generate_submit_button($lang->submit, array("id" => "submit"));
-	$form->output_submit_wrapper($buttons);
-	$form->end();
 	
 	$page->output_footer();
 }
@@ -2328,13 +2178,13 @@ function pluginuploader_send_usage_stats($plugin_codename = '', $import_source =
 	// don't need to know what it actually is, just if it's set
 	$stats['open_basedir'] = strlen(@ini_get('open_basedir'))?1:0;
 	$stats['pluginuploader_version'] = $pluginuploader_info['version'];
-	$stats['copy_test'] = (int)$pluginuploader->pluginuploader_copy_test();
-	$stats['use_ftp'] = (int)$pluginuploader->use_ftp;
+	$stats['copy_test'] = $pluginuploader->pluginuploader_copy_test()?1:0;
+	$stats['use_ftp'] = $pluginuploader->use_ftp?1:0;
 	$stats['ftp_storage_location'] = $pluginuploader->details_storage_location;
 	$stats['plugin_codename'] = $plugin_codename;
 	$stats['import_source'] = $import_source;
-	$stats['can_use_mods_site'] = pluginuploader_can_use_mods_site(true);
+	$stats['can_use_mods_site'] = pluginuploader_can_use_mods_site()?1:0;
 	
-	fetch_remote_file(API_URL.'?action=stats', $stats);
+	fetch_remote_file('http://mattrogowski.co.uk/mybb/pluginuploader.php?action=stats', $stats);
 }
 ?>
