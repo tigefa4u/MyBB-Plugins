@@ -653,6 +653,8 @@ if($mybb->input['action2'] == "do_upload")
 			}
 		}
 		
+		$readme = pluginuploader_load_readme($path);
+		
 		$page->output_header($lang->pluginuploader);
 		
 		$form = new Form("index.php?module=config-plugins&action=pluginuploader&amp;action2=do_upload&amp;do=import", "post", "", 1, "", "", "submit = document.getElementById('submit'); submit.style.color = '#CCCCCC'; submit.style.border = '3px double #CCCCCC'; submit.disabled = 'disabled';");
@@ -705,6 +707,10 @@ if($mybb->input['action2'] == "do_upload")
 			if(!empty($screenshots))
 			{
 				pluginuploader_show_screenshots($screenshots, $form_container);
+			}
+			if($readme)
+			{
+				$form_container->output_row($lang->pluginuploader_plugin_readme, $lang->pluginuploader_plugin_readme_desc, $form->generate_text_area('pluginuploader_readme', @file_get_contents($readme), array('disabled' => true, 'style' => 'width: 100%; height: 200px;')));
 			}
 			if($has_non_php_root_files)
 			{
@@ -2126,6 +2132,41 @@ function pluginuploader_show_screenshots($screenshots, &$form_container)
 	}
 	
 	$form_container->output_row($lang->pluginuploader_plugin_screenshots, $lang->pluginuploader_plugin_screenshots_desc, $images);
+}
+
+function pluginuploader_load_readme($path)
+{
+	global $pluginuploader;
+	
+	chdir($path);
+	
+	$readme_files = $pluginuploader->glob($path.'/readme*');
+	if(!empty($readme_files))
+	{
+		return $readme_files[0];
+	}
+	
+	$dirs = array_filter(@$pluginuploader->glob('*'), 'is_dir');
+	foreach($dirs as $key => $dir)
+	{
+		// if there's a __MACOSX folder, get rid of it, we don't want to deal with that
+		if($dir == "__MACOSX")
+		{
+			unset($dirs[$key]);
+		}
+	}
+	
+	if(count($dirs) > 1)
+	{
+		return false;
+	}
+	else
+	{
+		// we have another directory to go into
+		$new_dir = end($dirs);
+		$path .= "/" . $new_dir;
+		return pluginuploader_load_readme($path);
+	}
 }
 
 /*
