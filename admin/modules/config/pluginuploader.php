@@ -397,6 +397,12 @@ if($mybb->input['action2'] == "do_upload")
 			{
 				pluginuploader_move_files($root, 'upgrade');
 				
+				$import_source = $admin_session['data']['pluginuploader_import_source'];
+				if($mybb->cookies['mybb_pluginuploader_send_usage_stats'] != 'no')
+				{
+					pluginuploader_send_usage_stats($plugin_name, $import_source);
+				}
+				
 				flash_message($lang->pluginuploader_upgraded, 'success');
 				admin_redirect("index.php?module=config-plugins&action=pluginuploader");
 			}
