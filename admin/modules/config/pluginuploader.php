@@ -2243,7 +2243,7 @@ function pluginuploader_send_usage_stats($plugin_codename = '', $import_source =
 	$stats['pluginuploader_version'] = $pluginuploader_info['version'];
 	$stats['copy_test'] = $pluginuploader->pluginuploader_copy_test()?1:0;
 	$stats['use_ftp'] = $pluginuploader->use_ftp?1:0;
-	$stats['ftp_storage_location'] = $pluginuploader->details_storage_location;
+	$stats['ftp_storage_location'] = $pluginuploader->use_ftp?$pluginuploader->details_storage_location:'';
 	$stats['plugin_codename'] = $plugin_codename;
 	$stats['import_source'] = $import_source;
 	$stats['can_use_mods_site'] = pluginuploader_can_use_mods_site()?1:0;
