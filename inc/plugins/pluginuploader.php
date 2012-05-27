@@ -1,6 +1,6 @@
 <?php
 /**
- * Plugin Uploader 1.1
+ * Plugin Uploader 1.1.1
 
  * Copyright 2010 Matthew Rogowski
 
@@ -41,7 +41,7 @@ function pluginuploader_info()
 		'website' => 'http://mattrogowski.co.uk/mybb/plugins/plugin/plugin-uploader',
 		'author' => 'MattRogowski',
 		'authorsite' => 'http://mattrogowski.co.uk/mybb/',
-		'version' => '1.1',
+		'version' => '1.1.1',
 		'compatibility' => '16*',
 		'guid' => 'bf2f8440a92b2c8dc841ec7dc1929ff4'
 	);

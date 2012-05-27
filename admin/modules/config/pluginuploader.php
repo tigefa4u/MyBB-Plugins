@@ -1,6 +1,6 @@
 <?php
 /**
- * Plugin Uploader 1.1 - Admin File
+ * Plugin Uploader 1.1.1 - Admin File
 
  * Copyright 2010 Matthew Rogowski
 
