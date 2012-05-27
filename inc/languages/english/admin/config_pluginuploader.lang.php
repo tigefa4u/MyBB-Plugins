@@ -189,4 +189,5 @@ $l['pluginuploader_admin_log_modssite'] = 'the MyBB Mods Site';
 $l['pluginuploader_admin_log_url'] = 'a URL';
 $l['pluginuploader_admin_log_upload'] = 'file upload';
 $l['admin_log_config_plugins_pluginuploader'] = 'Plugin \'{1}\' was imported with the Plugin Uploader via {2}';
+$l['pluginuploader_upgraded'] = 'The Plugin Uploader was successfully upgraded.';
 ?>

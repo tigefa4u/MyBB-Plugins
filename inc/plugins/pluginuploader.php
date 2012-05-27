@@ -437,28 +437,20 @@ function pluginuploader_admin_config_plugins_plugin_list_plugin(&$table)
 	
 	$lang->load("config_pluginuploader");
 	
-	if($codename == "pluginuploader")
+	$table->construct_cell("<a href=\"index.php?module=config-plugins&amp;action=delete&amp;plugin={$codename}&amp;my_post_key={$mybb->post_code}\">{$lang->delete}</a>", array("class" => "align_center", "width" => 150));
+	if(empty($plugininfo['guid']))
 	{
-		$table->construct_cell("&nbsp;", array("class" => "align_center", "width" => 150));
 		$table->construct_cell("&nbsp;", array("class" => "align_center", "width" => 150));
 	}
 	else
 	{
-		$table->construct_cell("<a href=\"index.php?module=config-plugins&amp;action=delete&amp;plugin={$codename}&amp;my_post_key={$mybb->post_code}\">{$lang->delete}</a>", array("class" => "align_center", "width" => 150));
-		if(empty($plugininfo['guid']))
+		if(pluginuploader_can_use_mods_site())
 		{
-			$table->construct_cell("&nbsp;", array("class" => "align_center", "width" => 150));
+			$table->construct_cell("<a href=\"index.php?module=config-plugins&amp;action=pluginuploader&amp;action2=install&amp;plugin={$plugin_urls[trim($plugininfo['guid'])]}&amp;my_post_key={$mybb->post_code}\">{$lang->pluginuploader_reimport}</a>", array("class" => "align_center", "width" => 150));
 		}
 		else
 		{
-			if(pluginuploader_can_use_mods_site())
-			{
-				$table->construct_cell("<a href=\"index.php?module=config-plugins&amp;action=pluginuploader&amp;action2=install&amp;plugin={$plugin_urls[trim($plugininfo['guid'])]}&amp;my_post_key={$mybb->post_code}\">{$lang->pluginuploader_reimport}</a>", array("class" => "align_center", "width" => 150));
-			}
-			else
-			{
-				$table->construct_cell($lang->pluginuploader_mods_site_unavailable, array("class" => "align_center", "width" => 150));
-			}
+			$table->construct_cell($lang->pluginuploader_mods_site_unavailable, array("class" => "align_center", "width" => 150));
 		}
 	}
 }
@@ -479,20 +471,13 @@ function pluginuploader_admin_config_plugins_plugin_updates_plugin(&$table)
 
 	$lang->load("config_pluginuploader");
 
-	if($plugin['download_url']['value'] == "plugin-uploader")
+	if(pluginuploader_can_use_mods_site())
 	{
-		$table->construct_cell("&nbsp;", array("class" => "align_center", "width" => 150));
+		$table->construct_cell("<a href=\"index.php?module=config-plugins&amp;action=pluginuploader&amp;action2=install&amp;plugin={$plugin['download_url']['value']}&amp;my_post_key={$mybb->post_code}\"><strong>{$lang->pluginuploader_upgrade}</strong></a>", array("class" => "align_center", "width" => 150));
 	}
 	else
 	{
-		if(pluginuploader_can_use_mods_site())
-		{
-			$table->construct_cell("<a href=\"index.php?module=config-plugins&amp;action=pluginuploader&amp;action2=install&amp;plugin={$plugin['download_url']['value']}&amp;my_post_key={$mybb->post_code}\"><strong>{$lang->pluginuploader_upgrade}</strong></a>", array("class" => "align_center", "width" => 150));
-		}
-		else
-		{
-			$table->construct_cell($lang->pluginuploader_mods_site_unavailable, array("class" => "align_center", "width" => 150));
-		}
+		$table->construct_cell($lang->pluginuploader_mods_site_unavailable, array("class" => "align_center", "width" => 150));
 	}
 }
 
@@ -512,20 +497,13 @@ function pluginuploader_admin_config_plugins_browse_plugins_plugin(&$table)
 	
 	$lang->load("config_pluginuploader");
 	
-	if($result['download_url']['value'] == "plugin-uploader")
+	if(pluginuploader_can_use_mods_site())
 	{
-		$table->construct_cell("&nbsp;", array("class" => "align_center", "width" => 150));
+		$table->construct_cell("<a href=\"index.php?module=config-plugins&amp;action=pluginuploader&amp;action2=install&amp;plugin={$result['download_url']['value']}&amp;my_post_key={$mybb->post_code}\"><strong>{$lang->pluginuploader_install}</strong></a>", array("class" => "align_center", "width" => 150));
 	}
 	else
 	{
-		if(pluginuploader_can_use_mods_site())
-		{
-			$table->construct_cell("<a href=\"index.php?module=config-plugins&amp;action=pluginuploader&amp;action2=install&amp;plugin={$result['download_url']['value']}&amp;my_post_key={$mybb->post_code}\"><strong>{$lang->pluginuploader_install}</strong></a>", array("class" => "align_center", "width" => 150));
-		}
-		else
-		{
-			$table->construct_cell($lang->pluginuploader_mods_site_unavailable, array("class" => "align_center", "width" => 150));
-		}
+		$table->construct_cell($lang->pluginuploader_mods_site_unavailable, array("class" => "align_center", "width" => 150));
 	}
 }
 

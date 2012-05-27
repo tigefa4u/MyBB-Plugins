@@ -168,16 +168,7 @@ if($mybb->input['action2'] == "do_upload")
 						preg_match('#mods.(mybb.com|mybboard.net)/(view|download)/([a-zA-Z0-9\-]+)#', $mybb->input['plugin_url'], $plugin_url_info);
 						if($plugin_url_info[3])
 						{
-							if($plugin_url_info[3] == "plugin-uploader")
-							{
-								flash_message($lang->pluginuploader_error_plugin_pluginuploader, 'error');
-								admin_redirect("index.php?module=config-plugins&action=pluginuploader");
-							}
-							else
-							{
-								// go to the import page
-								admin_redirect("index.php?module=config-plugins&action=pluginuploader&action2=install&plugin=".$plugin_url_info[3]."&my_post_key={$mybb->post_code}");
-							}
+							admin_redirect("index.php?module=config-plugins&action=pluginuploader&action2=install&plugin=".$plugin_url_info[3]."&my_post_key={$mybb->post_code}");
 						}
 						// if there's not a valid name, strip out everything to just leave the name that was given and put it into the error message
 						else
@@ -402,10 +393,11 @@ if($mybb->input['action2'] == "do_upload")
 			}
 			
 			$plugin_name = str_replace(array("inc/plugins/", ".php"), "", $plugin_file);
-			// trying to upload this plugin; that's just not going to work
 			if($plugin_name == "pluginuploader")
 			{
-				flash_message($lang->pluginuploader_error_plugin_pluginuploader, 'error');
+				pluginuploader_move_files($root, 'upgrade');
+				
+				flash_message($lang->pluginuploader_upgraded, 'success');
 				admin_redirect("index.php?module=config-plugins&action=pluginuploader");
 			}
 			$plugins_cache = $cache->read("plugins");
@@ -864,12 +856,6 @@ elseif($mybb->input['action2'] == "do_install")
 	
 	$plugin_name = $mybb->input['plugin'];
 	
-	if($plugin_name == "plugin-uploader")
-	{
-		flash_message($lang->pluginuploader_error_plugin_pluginuploader, 'error');
-		admin_redirect("index.php?module=config-plugins&action=pluginuploader");
-	}
-	
 	$url = 'http://mods.mybb.com/download';
 	$fields = array(
 		'friendly_name' => urlencode($plugin_name),
@@ -925,12 +911,6 @@ elseif($mybb->input['action2'] == "do_install")
 elseif($mybb->input['action2'] == "install")
 {
 	$plugin = $mybb->input['plugin'];
-	
-	if($plugin == "plugin-uploader")
-	{
-		flash_message($lang->pluginuploader_error_plugin_pluginuploader, 'error');
-		admin_redirect("index.php?module=config-plugins&action=pluginuploader");
-	}
 	
 	if(!pluginuploader_can_use_mods_site())
 	{
