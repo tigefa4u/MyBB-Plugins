@@ -737,6 +737,10 @@ if($mybb->input['action2'] == "do_upload")
 			{
 				pluginuploader_show_screenshots($screenshots, $form_container);
 			}
+			if($readme)
+			{
+				$form_container->output_row($lang->pluginuploader_plugin_readme, $lang->pluginuploader_plugin_readme_desc, $form->generate_text_area('pluginuploader_readme', @file_get_contents($readme), array('disabled' => true, 'style' => 'width: 100%; height: 200px;')));
+			}
 			if($has_non_php_root_files)
 			{
 				$form_container->output_row($lang->pluginuploader_import_non_php_root_files, $lang->pluginuploader_import_non_php_root_files_desc, $form->generate_yes_no_radio("import_non_php_root_files", 0, true));
@@ -2141,7 +2145,7 @@ function pluginuploader_load_readme($path)
 	
 	chdir($path);
 	
-	$readme_files = $pluginuploader->glob($path.'/readme*');
+	$readme_files = $pluginuploader->glob($path.'/[rR][eE][aA][dD][mM][eE]*');
 	if(!empty($readme_files))
 	{
 		return $readme_files[0];
@@ -2157,16 +2161,16 @@ function pluginuploader_load_readme($path)
 		}
 	}
 	
-	if(count($dirs) > 1)
-	{
-		return false;
-	}
-	else
+	if(count($dirs) == 1)
 	{
 		// we have another directory to go into
 		$new_dir = end($dirs);
 		$path .= "/" . $new_dir;
 		return pluginuploader_load_readme($path);
+	}
+	else
+	{
+		return false;
 	}
 }
 
