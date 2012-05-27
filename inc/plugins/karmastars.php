@@ -197,7 +197,7 @@ function karmastars_activate()
 	find_replace_templatesets("postbit", "#".preg_quote('{$post[\'onlinestatus\']}')."#i", '{$post[\'karmastar\']}{$post[\'onlinestatus\']}');
 	find_replace_templatesets("postbit_classic", "#".preg_quote('{$post[\'onlinestatus\']}')."#i", '{$post[\'karmastar\']}{$post[\'onlinestatus\']}');
 	find_replace_templatesets("member_profile", "#".preg_quote('<span class="largetext"><strong>{$formattedname}</strong></span><br />')."#i", '<span class="largetext"><strong>{$formattedname}</strong></span>{$memprofile[\'karmastar\']}<br />');
-	find_replace_templatesets("footer", "#".preg_quote('{$lang->bottomlinks_syndication}</a></span>')."#i", '{$lang->bottomlinks_syndication}</a> | <a href="{$mybb->settings[\'bburl\']}/misc.php?action=karmastars">{$lang->karmastars}</a></span>');
+	find_replace_templatesets("footer", "#".preg_quote('{$lang->bottomlinks_syndication}</a>')."#i", '{$lang->bottomlinks_syndication}</a> | <a href="{$mybb->settings[\'bburl\']}/misc.php?action=karmastars">{$lang->karmastars}</a>');
 	
 	$template_group = array(
 		"prefix" => "karmastars",
