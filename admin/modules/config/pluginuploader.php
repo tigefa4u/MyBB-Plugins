@@ -2129,7 +2129,7 @@ function pluginuploader_show_screenshots($screenshots, &$form_container)
 }
 
 /*
- * This is a copf of pluginSystem::is_compatible but instead of passing a plugin name to look for in the ./inc/plugins/ folder, pass it the path of the ne plugin being uploaded
+ * This is a copy of pluginSystem::is_compatible but instead of passing a plugin name to look for in the ./inc/plugins/ folder, pass it the path of the new plugin being uploaded
 */
 function plugin_is_compatible($plugin, $path)
 {
