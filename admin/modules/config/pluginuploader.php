@@ -655,6 +655,7 @@ if($mybb->input['action2'] == "do_upload")
 		
 		$readme = pluginuploader_load_readme($path);
 		
+		$page->add_breadcrumb_item($lang->pluginuploader_plugin_info);
 		$page->output_header($lang->pluginuploader);
 		
 		$form = new Form("index.php?module=config-plugins&action=pluginuploader&amp;action2=do_upload&amp;do=import", "post", "", 1, "", "", "submit = document.getElementById('submit'); submit.style.color = '#CCCCCC'; submit.style.border = '3px double #CCCCCC'; submit.disabled = 'disabled';");

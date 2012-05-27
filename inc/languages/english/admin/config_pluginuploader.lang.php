@@ -29,6 +29,7 @@ $l['pluginuploader_plugin_mods_site'] = "Mods Site";
 $l['pluginuploader_plugin_mods_site_desc'] = "<a href=\"index.php?module=config-plugins&action=browse\">Browse the Mods Site database</a> and install straight to your forum. <a href=\"index.php?module=config-plugins&action=pluginuploader&action2=mods_site_integration\">More information</a>.";
 $l['pluginuploader_plugin_mods_site_unavailable_desc'] = "Mods Site integration is unavailable for your forum. <a href=\"index.php?module=config-plugins&action=pluginuploader&action2=mods_site_integration\">More information</a>.";
 $l['pluginuploader_plugin_desc_warning'] = "<strong>Note: This will not be able to import every plugin .zip package.</strong> If the files inside the .zip are not organised in a 'sensible' or logical way it will not be possible to put the files in the correct locations.";
+$l['pluginuploader_plugin_info'] = 'Plugin Information';
 $l['pluginuploader_plugin_name'] = "Plugin Name";
 $l['pluginuploader_plugin_version'] = "Plugin Version";
 $l['pluginuploader_plugin_description'] = "Plugin Description";
