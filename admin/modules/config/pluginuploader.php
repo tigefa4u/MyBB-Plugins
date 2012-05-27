@@ -809,11 +809,28 @@ if($mybb->input['action2'] == "do_upload")
 			flash_message($lang->sprintf($lang->pluginuploader_error_move_files, $errors), 'error');
 			admin_redirect("index.php?module=config-plugins&action=pluginuploader");
 		}
+		$import_source = $admin_session['data']['pluginuploader_import_source'];
 		if($mybb->cookies['mybb_pluginuploader_send_usage_stats'] != 'no')
 		{
-			$import_source = $admin_session['data']['pluginuploader_import_source'];
 			pluginuploader_send_usage_stats($plugin_name, $import_source);
 		}
+		switch($import_source)
+		{
+			case 'modssite':
+				$admin_log_text_string = $lang->pluginuploader_admin_log_modssite;
+				break;
+			case 'url':
+				$admin_log_text_string = $lang->pluginuploader_admin_log_url;
+				break;
+			case 'upload':
+			default:
+				$admin_log_text_string = $lang->pluginuploader_admin_log_upload;
+				break;
+		}
+		require_once MYBB_ROOT.'inc/plugins/'.$plugin_name.'.php';
+		$info_func = $plugin_name.'_info';
+		$plugin_info = $info_func();
+		log_admin_action($plugin_info['name'], $admin_log_text_string);
 		// this is the same whether it's a new plugin or an upgrade
 		if($mybb->input['activate'] == 1)
 		{

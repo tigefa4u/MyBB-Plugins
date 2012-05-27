@@ -182,4 +182,8 @@ $l['pluginuploader_stats_more_info'] = 'The following information is sent to my 
 $l['pluginuploader_mods_site_title'] = 'MyBB Mods Site Integration';
 $l['pluginuploader_mods_site_how_it_works'] = '<h2>How does it work?</h2>When you try and import a plugin from the Mods Site, it will first fetch the licence for you to accept, like when you use the Mods Site normally. This will then submit the form that is usually submitted when you accept the licence and the plugin will be imported as if you uploaded the .zip via the Plugin Uploader. The password for the Plugin Uploader isn\'t required here as the files are coming from a trusted source, rather than allowing arbitrary files to be uploaded.';
 $l['pluginuploader_mods_site_why_it_wont_work'] = '<h2>It doesn\'t work/isn\'t available for me!</h2>If cURL is not enabled on your server, then the Plugin Uploader will not be able to fetch plugins from the Mods Site. cURL is a fairly standard extension to have available, so ask your host if it\'s possible to enable it.';
+$l['pluginuploader_admin_log_modssite'] = 'the MyBB Mods Site';
+$l['pluginuploader_admin_log_url'] = 'a URL';
+$l['pluginuploader_admin_log_upload'] = 'file upload';
+$l['admin_log_config_plugins_pluginuploader'] = 'Plugin \'{1}\' was imported with the Plugin Uploader via {2}';
 ?>
