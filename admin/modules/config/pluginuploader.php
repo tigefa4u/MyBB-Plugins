@@ -895,17 +895,22 @@ elseif($mybb->input['action2'] == "do_install")
 		}
 	}
 	
-	if(!empty($result) && @file_put_contents(MYBB_ROOT.'inc/plugins/temp/'.$plugin_name.'.zip', $result))
+	if(empty($result))
+	{
+		flash_message($lang->sprintf($lang->pluginuploader_error_downloading_from_mods, $plugin_name).'<br /><br />'.$lang->pluginuploader_error_downloading_from_mods_unknown_error, 'error');
+		admin_redirect("index.php?module=config-plugins&action=pluginuploader");
+	}
+	elseif(!@file_put_contents(MYBB_ROOT.'inc/plugins/temp/'.$plugin_name.'.zip', $result))
+	{
+		flash_message($lang->pluginuploader_error_temp_dir, 'error');
+		admin_redirect("index.php?module=config-plugins&action=pluginuploader");
+	}
+	else
 	{
 		update_admin_session('pluginuploader_import_source', 'modssite');
 		
 		flash_message($lang->pluginuploader_downloaded_from_mods, 'success');
 		admin_redirect("index.php?module=config-plugins&action=pluginuploader&action2=do_upload&from_mods_site=1&plugin_name=".$plugin_name."&my_post_key={$mybb->post_code}");
-	}
-	else
-	{
-		flash_message($lang->sprintf($lang->pluginuploader_error_downloading_from_mods, $plugin_name).'<br /><br />'.$lang->pluginuploader_error_downloading_from_mods_unknown_error, 'error');
-		admin_redirect("index.php?module=config-plugins&action=pluginuploader");
 	}
 }
 elseif($mybb->input['action2'] == "install")
