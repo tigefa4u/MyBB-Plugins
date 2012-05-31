@@ -952,7 +952,7 @@ elseif($mybb->input['action2'] == "install")
 		admin_redirect("index.php?module=config-plugins&action=pluginuploader&action2=ftp_details");
 	}
 	
-	if(md5($licence_content) == 'd97623d172f087d9640da9acd38830ff')
+	if(empty($licence_content) || md5($licence_content) == 'd97623d172f087d9640da9acd38830ff')
 	{
 		admin_redirect("index.php?module=config-plugins&action=pluginuploader&action2=do_install&plugin=".$plugin."&my_post_key={$mybb->post_code}");
 	}
