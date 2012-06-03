@@ -262,6 +262,11 @@ elseif($mybb->input['action'] == "edit")
 				$forums = $cache->read("forums");
 				foreach($user_perms['forums'] as $forum => $perms)
 				{
+					if(!array_key_exists($forum, $forums))
+					{
+						customuserperms_delete_forum_perms($cupid, $forum);
+						continue;
+					}
 					$custom_perms_overview = "";
 					$perm_count = 0;
 					foreach($perms as $key => $val)
@@ -884,5 +889,17 @@ function generate_permissions($permissions, $user_perms)
 			$form_container->construct_row();
 		}
 	}
+}
+
+function customuserperms_delete_forum_perms($cupid, $forum)
+{
+	global $db;
+	
+	$query = $db->simple_select('customuserperms', '*', 'cupid = \''.$db->escape_string($cupid).'\'');
+	$perms = $db->fetch_array($query);
+	$customperms = unserialize($perms['customperms']);
+	unset($customperms['forums'][$forum]);
+	$perms['customperms'] = serialize($customperms);
+	$db->update_query('customuserperms', $perms, 'cupid = \''.$db->escape_string($cupid).'\'');
 }
 ?>
