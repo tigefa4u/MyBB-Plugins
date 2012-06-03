@@ -683,13 +683,13 @@ class PluginUploader
 			// we need to connect twice because if the server is not configured to understand the SSL encryption, the FTP login will fail, even though ftp_ssl_connect() is available and returns a valid connection
 			// just helps the flow a bit if the backup connection is made here
 			// http://uk.php.net/manual/en/function.ftp-ssl-connect.php#106931
-			$ftp_connection = @ftp_ssl_connect($this->ftp_host);
-			$ftp_connection_standard = @ftp_connect($this->ftp_host);
+			$ftp_connection = @ftp_ssl_connect($this->ftp_host, 21, 5);
+			$ftp_connection_standard = @ftp_connect($this->ftp_host, 21, 5);
 			$this->using_ssl = true;
 		}
 		else
 		{
-			$ftp_connection = @ftp_connect($this->ftp_host);
+			$ftp_connection = @ftp_connect($this->ftp_host, 21, 5);
 		}
 		
 		if($ftp_connection)
