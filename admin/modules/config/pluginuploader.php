@@ -922,8 +922,8 @@ elseif($mybb->input['action2'] == "do_install")
 					break;
 				}
 			}
-			$fp = fopen('http://mods.mybb.com/'.$zip_name, 'rb');
-			$result = stream_get_contents($fp);
+			$fp = @fopen('http://mods.mybb.com/'.$zip_name, 'rb');
+			$result = @stream_get_contents($fp);
 		}
 	}
 	
