@@ -874,17 +874,40 @@ elseif($mybb->input['action2'] == "do_install")
 	}
 	rtrim($fields_string, '&');
 	
+	$zip_name = '';
 	$result = '';
-	if(pluginuploader_can_use_mods_site())
+	$mods_site_type = pluginuploader_can_use_mods_site(true);
+	if($mods_site_type != 'none')
 	{
-		$ch = curl_init();
-		curl_setopt($ch,CURLOPT_URL,$url);
-		curl_setopt($ch,CURLOPT_POST,count($fields));
-		curl_setopt($ch,CURLOPT_POSTFIELDS,$fields_string);
-		curl_setopt($ch,CURLOPT_RETURNTRANSFER,true);
-		curl_setopt($ch,CURLOPT_HEADER,true);
-		$result = curl_exec($ch);
-		$result = explode("\n", $result);
+		if($mods_site_type == 'cURL')
+		{
+			$ch = curl_init();
+			curl_setopt($ch,CURLOPT_URL,$url);
+			curl_setopt($ch,CURLOPT_POST,count($fields));
+			curl_setopt($ch,CURLOPT_POSTFIELDS,$fields_string);
+			curl_setopt($ch,CURLOPT_RETURNTRANSFER,true);
+			curl_setopt($ch,CURLOPT_HEADER,true);
+			$result = curl_exec($ch);
+			$result = explode("\n", $result);
+			curl_close($ch);
+		}
+		
+		if($mods_site_type == 'stream')
+		{
+			if(empty($zip_name))
+			{
+				$params = array(
+						'http' => array(
+						'method' => 'POST',
+						'content' => $fields_string
+					)	
+				); 	
+				$scc = @stream_context_create($params);
+				$fp = @fopen('http://mattrogowski.co.uk/mybb/pluginuploader_test.php', 'rb', false, $scc);
+				$result = $http_response_header;
+			}
+		}
+		
 		foreach($result as $header)
 		{
 			if(substr($header, 0, 9) == 'Location:')
@@ -893,7 +916,6 @@ elseif($mybb->input['action2'] == "do_install")
 				break;
 			}
 		}
-		curl_close($ch);
 		$result = '';
 		if(!empty($zip_name))
 		{
@@ -2237,7 +2259,7 @@ function pluginuploader_send_usage_stats($plugin_codename = '', $import_source =
 	$stats['ftp_storage_location'] = $pluginuploader->use_ftp?$pluginuploader->details_storage_location:'';
 	$stats['plugin_codename'] = $plugin_codename;
 	$stats['import_source'] = $import_source;
-	$stats['can_use_mods_site'] = pluginuploader_can_use_mods_site()?1:0;
+	$stats['can_use_mods_site'] = pluginuploader_can_use_mods_site(true);
 	
 	fetch_remote_file('http://mattrogowski.co.uk/mybb/pluginuploader.php?action=stats', $stats);
 }

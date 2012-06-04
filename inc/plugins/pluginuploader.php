@@ -507,15 +507,40 @@ function pluginuploader_admin_config_plugins_browse_plugins_plugin(&$table)
 	}
 }
 
-function pluginuploader_can_use_mods_site()
+function pluginuploader_can_use_mods_site($return_type = false)
 {
 	if(function_exists('curl_init'))
 	{
-		return true;
+		if($return_type)
+		{
+			return 'cURL';
+		}
+		else
+		{
+			return true;
+		}
+	}
+	elseif(function_exists('stream_context_create'))
+	{
+		if($return_type)
+		{
+			return 'stream';
+		}
+		else
+		{
+			return true;
+		}
 	}
 	else
 	{
-		return false;
+		if($return_type)
+		{
+			return 'none';
+		}
+		else
+		{
+			return false;
+		}
 	}
 }
 
