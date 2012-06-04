@@ -390,7 +390,7 @@ function pluginuploader_admin_config_plugins_plugin_list()
 		}
 	}
 	
-	$url = "http://mods.mybboard.net/version_check.php?";
+	$url = "http://mods.mybb.com/version_check.php?";
 	foreach($urls as $guid)
 	{
 		$url .= "info[]=".urlencode($guid)."&";

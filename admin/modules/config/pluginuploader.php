@@ -890,36 +890,40 @@ elseif($mybb->input['action2'] == "do_install")
 			$result = curl_exec($ch);
 			$result = explode("\n", $result);
 			curl_close($ch);
-		}
-		
-		if($mods_site_type == 'stream')
-		{
-			if(empty($zip_name))
+			foreach($result as $header)
 			{
-				$params = array(
-						'http' => array(
-						'method' => 'POST',
-						'content' => $fields_string
-					)	
-				); 	
-				$scc = @stream_context_create($params);
-				$fp = @fopen('http://mattrogowski.co.uk/mybb/pluginuploader_test.php', 'rb', false, $scc);
-				$result = $http_response_header;
+				if(substr($header, 0, 9) == 'Location:')
+				{
+					$zip_name = trim(substr($header, 9));
+					break;
+				}
+			}
+			$result = '';
+			if(!empty($zip_name))
+			{
+				$result = fetch_remote_file('http://mods.mybb.com/'.$zip_name);
 			}
 		}
-		
-		foreach($result as $header)
+		elseif($mods_site_type == 'stream')
 		{
-			if(substr($header, 0, 9) == 'Location:')
+			$params = array(
+				'http' => array(
+					'method' => 'POST',
+					'content' => $fields_string
+				)
+			); 
+			$scc = @stream_context_create($params);
+			$fp = @fopen($url, 'rb', false, $scc);
+			foreach($http_response_header as $header)
 			{
-				$zip_name = trim(substr($header, 9));
-				break;
+				if(substr($header, 0, 9) == 'Location:')
+				{
+					$zip_name = trim(substr($header, 9));
+					break;
+				}
 			}
-		}
-		$result = '';
-		if(!empty($zip_name))
-		{
-			$result = fetch_remote_file('http://mods.mybb.com/'.$zip_name);
+			$fp = fopen('http://mods.mybb.com/'.$zip_name, 'rb');
+			$result = stream_get_contents($fp);
 		}
 	}
 	
