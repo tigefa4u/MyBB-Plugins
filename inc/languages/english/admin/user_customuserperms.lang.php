@@ -64,8 +64,11 @@ $l['customuserperms_edit_specific_forums_key'] = "These permissions will be appl
 
 $l['permission'] = "Permission";
 $l['inherit'] = "Inherit";
+$l['inherit_all'] = "Inherit (all)";
 $l['yes'] = "Yes";
+$l['yes_all'] = "Yes (all)";
 $l['no'] = "No";
+$l['no_all'] = "No (all)";
 $l['username'] = "Username";
 $l['activate'] = "Activate";
 $l['deactivate'] = "Deactivate";

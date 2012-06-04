@@ -127,6 +127,28 @@ elseif($mybb->input['action'] == "edit")
 		'description' => $lang->customuserperms_edit_specific_forums_nav
 	);
 	
+	$set_all_js = "<script type=\"text/javascript\">
+	document.observe(\"dom:loaded\", function() {
+		$('set_all_inherit').observe('click', function() {
+			set_all('-1');
+		});
+		$('set_all_yes').observe('click', function() {
+			set_all('1');
+		});
+		$('set_all_no').observe('click', function() {
+			set_all('0');
+		});
+	});
+	function set_all(what) {
+		$$('input').each(function(input) {
+			input.checked = false;
+		});
+		$$('input[value='+what+']').each(function(input) {
+			input.checked = true;
+		});
+	}
+	</script>";
+	
 	if($mybb->input['do'] == "forums")
 	{
 		$fid = intval($mybb->input['fid']);
@@ -142,6 +164,8 @@ elseif($mybb->input['action'] == "edit")
 			$page->output_header($lang->customuserperms);
 			$page->output_nav_tabs($sub_tabs, "customuserperms_edit_specific_forums");
 		}
+		
+		echo $set_all_js;
 		
 		if($fid)
 		{
@@ -197,11 +221,11 @@ elseif($mybb->input['action'] == "edit")
 					"candeletethreads" => array(
 						"lang" => "editing_field_candeletethreads",
 						"type" => "yesno"
-					)/*,
+					),
 					"caneditattachments" => array(
 						"lang" => "editing_field_caneditattachments",
 						"type" => "yesno"
-					)*/
+					)
 				),
 				"group_polls" => array(
 					"canpostpolls" => array(
@@ -214,6 +238,15 @@ elseif($mybb->input['action'] == "edit")
 					)
 				)
 			);
+			if($fid != -1)
+			{
+				$permissions['group_misc'] = array(
+					'cansearch' => array(
+						'lang' => 'misc_field_cansearch',
+						'type' => 'yesno'
+					)
+				);
+			}
 			
 			$lang->load("forum_management");
 			
@@ -319,6 +352,8 @@ elseif($mybb->input['action'] == "edit")
 		$page->add_breadcrumb_item($lang->customuserperms_edit_general, "index.php?module=user-customuserperms&amp;action=edit&amp;do=do_general");
 		$page->output_header($lang->customuserperms);
 		$page->output_nav_tabs($sub_tabs, "customuserperms_edit_general");
+		
+		echo $set_all_js;
 		
 		$permissions = array(
 			"viewing_options" => array(
@@ -863,10 +898,22 @@ function generate_permissions($permissions, $user_perms)
 {
 	global $lang, $form, $form_container;
 	
+	$done_groups = 0;
 	foreach($permissions as $group => $perms)
 	{
-		$form_container->output_cell("<strong>" . $lang->$group . "</strong>", array("colspan" => 4));
-		$form_container->construct_row();
+		if($done_groups == 0)
+		{
+			$form_container->output_cell("<strong>" . $lang->$group . "</strong>");
+			$form_container->output_cell("<a href='javascript:void(0)' class='set_all' id='set_all_inherit'>" . $lang->inherit_all . "</a>", array('style' => 'text-align: center;'));
+			$form_container->output_cell("<a href='javascript:void(0)' class='set_all' id='set_all_yes'>" . $lang->yes_all . "</a>", array('style' => 'text-align: center;'));
+			$form_container->output_cell("<a href='javascript:void(0)' class='set_all' id='set_all_no'>" . $lang->no_all . "</a>", array('style' => 'text-align: center;'));
+			$form_container->construct_row();
+		}
+		else
+		{
+			$form_container->output_cell("<strong>" . $lang->$group . "</strong>", array("colspan" => 4));
+			$form_container->construct_row();
+		}
 		foreach($perms as $perm => $info)
 		{
 			$info['description'] = "";
@@ -888,6 +935,7 @@ function generate_permissions($permissions, $user_perms)
 			}
 			$form_container->construct_row();
 		}
+		$done_groups++;
 	}
 }
 
