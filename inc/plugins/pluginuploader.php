@@ -520,7 +520,7 @@ function pluginuploader_can_use_mods_site($return_type = false)
 			return true;
 		}
 	}
-	elseif(function_exists('stream_context_create'))
+	elseif(function_exists('stream_context_create') && strtolower(@ini_get('allow_url_fopen')) == 'on')
 	{
 		if($return_type)
 		{
