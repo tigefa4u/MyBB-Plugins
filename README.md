@@ -1,7 +1,7 @@
 MyBB-Plugins
 ============
 
-All my MyBB plugins.
+MyBB plugins.
 
 
 ### Installing Plugins
